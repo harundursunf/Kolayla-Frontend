@@ -1,0 +1,79 @@
+Adana: Çukurova Üniversitesi,/public/sehirlerFoto/adana.jpg; Adana Alparslan Türkeş Bilim ve Teknoloji Üniversitesi,/public/sehirlerFoto/adana2.webp  
+Adıyaman: Adıyaman Üniversitesi,/public/sehirlerFoto/adiyaman.jpg  
+Afyonkarahisar: Afyon Kocatepe Üniversitesi,/public/sehirlerFoto/afyonkarahisar.jpg; Afyonkarahisar Sağlık Bilimleri Üniversitesi,/public/sehirlerFoto/afyonkarahisar2.jpg  
+Ağrı: Ağrı İbrahim Çeçen Üniversitesi,/public/sehirlerFoto/agri.webp  
+Aksaray: Aksaray Üniversitesi,/public/sehirlerFoto/aksaray.jpg  
+Amasya: Amasya Üniversitesi,/public/sehirlerFoto/amasya.jpg  
+Ankara: Ankara Üniversitesi,/public/sehirlerFoto/ankara.jpg; Hacettepe Üniversitesi,/public/sehirlerFoto/ankara2.jpg; Gazi Üniversitesi,/public/sehirlerFoto/ankara3.jpg; Orta Doğu Teknik Üniversitesi,/public/sehirlerFoto/ankara4.jpg; Yıldırım Beyazıt Üniversitesi,/public/sehirlerFoto/ankara5.jpg; Ankara Yıldırım Beyazıt Üniversitesi,/public/sehirlerFoto/ankara6.jpg; Ankara Hacı Bayram Veli Üniversitesi,/public/sehirlerFoto/ankara7.jpg; Çankaya Üniversitesi,/public/sehirlerFoto/ankara8.jpg; Atılım Üniversitesi,/public/sehirlerFoto/ankara9.jpg; TOBB Ekonomi ve Teknoloji Üniversitesi,/public/sehirlerFoto/ankara10.jpg; Ufuk Üniversitesi,/public/sehirlerFoto/ankara11.jpg; Başkent Üniversitesi,/public/sehirlerFoto/ankara12.jpg  
+Antalya: Akdeniz Üniversitesi,/public/sehirlerFoto/antalya.jpg; Antalya Bilim Üniversitesi,/public/sehirlerFoto/antalya2.jpg; Alanya Alaaddin Keykubat Üniversitesi,/public/sehirlerFoto/antalya3.jpg  
+Ardahan: Ardahan Üniversitesi,/public/sehirlerFoto/ardahan.jpg  
+Artvin: Artvin Çoruh Üniversitesi,/public/sehirlerFoto/artvin.jpg  
+Aydın: Adnan Menderes Üniversitesi,/public/sehirlerFoto/aydin.jpg  
+Balıkesir: Balıkesir Üniversitesi,/public/sehirlerFoto/balikesir.jpg  
+Bartın: Bartın Üniversitesi,/public/sehirlerFoto/bartin.jpg  
+Batman: Batman Üniversitesi,/public/sehirlerFoto/batman.jpg  
+Bayburt: Bayburt Üniversitesi,/public/sehirlerFoto/bayburt.jpg  
+Bilecik: Bilecik Şeyh Edebali Üniversitesi,/public/sehirlerFoto/bilecik.jpg  
+Bingöl: Bingöl Üniversitesi,/public/sehirlerFoto/bingol.jpg  
+Bitlis: Bitlis Eren Üniversitesi,/public/sehirlerFoto/bitlis.jpg  
+Bolu: Bolu Abant İzzet Baysal Üniversitesi,/public/sehirlerFoto/bolu.jpg  
+Burdur: Mehmet Akif Ersoy Üniversitesi,/public/sehirlerFoto/burdur.jpg  
+Bursa: Uludağ Üniversitesi,/public/sehirlerFoto/bursa.jpg; Bursa Teknik Üniversitesi,/public/sehirlerFoto/bursa2.jpg  
+Çanakkale: Çanakkale Onsekiz Mart Üniversitesi,/public/sehirlerFoto/canakkale.jpg  
+Çankırı: Çankırı Karatekin Üniversitesi,/public/sehirlerFoto/cankiri.jpg  
+Denizli: Pamukkale Üniversitesi,/public/sehirlerFoto/denizli.jpg  
+Diyarbakır: Dicle Üniversitesi,/public/sehirlerFoto/diyarbakir.jpg  
+Düzce: Düzce Üniversitesi,/public/sehirlerFoto/duzce.jpg  
+Edirne: Trakya Üniversitesi,/public/sehirlerFoto/edirne.jpg  
+Elazığ: Fırat Üniversitesi,/public/sehirlerFoto/elazig.jpg  
+Erzincan: Erzincan Binali Yıldırım Üniversitesi,/public/sehirlerFoto/erzincan.jpg  
+Erzurum: Atatürk Üniversitesi,/public/sehirlerFoto/erzurum.jpg; Erzurum Teknik Üniversitesi,/public/sehirlerFoto/erzurum2.jpg  
+Eskişehir: Anadolu Üniversitesi,/public/sehirlerFoto/eskisehir.jpg; Eskişehir Osmangazi Üniversitesi,/public/sehirlerFoto/eskisehir2.jpg; Eskişehir Teknik Üniversitesi,/public/sehirlerFoto/eskisehir3.jpg  
+Gaziantep: Gaziantep Üniversitesi,/public/sehirlerFoto/gaziantep.jpg; Hasan Kalyoncu Üniversitesi,/public/sehirlerFoto/gaziantep2.jpg; SANKO Üniversitesi,/public/sehirlerFoto/gaziantep3.jpg  
+Giresun: Giresun Üniversitesi,/public/sehirlerFoto/giresun.jpg  
+Gümüşhane: Gümüşhane Üniversitesi,/public/sehirlerFoto/gumushane.jpg  
+Hakkâri: Hakkâri Üniversitesi,/public/sehirlerFoto/hakkari.jpg  
+Hatay: Hatay Mustafa Kemal Üniversitesi,/public/sehirlerFoto/hatay.jpg; İskenderun Teknik Üniversitesi,/public/sehirlerFoto/hatay2.jpg  
+Iğdır: Iğdır Üniversitesi,/public/sehirlerFoto/igdir.jpg  
+Isparta: Isparta Uygulamalı Bilimler Üniversitesi,/public/sehirlerFoto/isparta.jpg; Süleyman Demirel Üniversitesi,/public/sehirlerFoto/isparta2.jpg  
+İstanbul: Boğaziçi Üniversitesi,/public/sehirlerFoto/istanbul.jpg; İstanbul Teknik Üniversitesi,/public/sehirlerFoto/istanbul2.jpg; İstanbul Üniversitesi,/public/sehirlerFoto/istanbul3.jpg; Marmara Üniversitesi,/public/sehirlerFoto/istanbul4.jpg; Yıldız Teknik Üniversitesi,/public/sehirlerFoto/istanbul5.jpg; İstanbul Bilgi Üniversitesi,/public/sehirlerFoto/istanbul6.jpg; İstanbul Medeniyet Üniversitesi,/public/sehirlerFoto/istanbul7.jpg; İstanbul Şehir Üniversitesi,/public/sehirlerFoto/istanbul8.jpg; Koç Üniversitesi,/public/sehirlerFoto/istanbul9.jpg; Sabancı Üniversitesi,/public/sehirlerFoto/istanbul10.jpg; Bahçeşehir Üniversitesi,/public/sehirlerFoto/istanbul11.jpg; Beykent Üniversitesi,/public/sehirlerFoto/istanbul12.jpg  
+İzmir: Ege Üniversitesi,/public/sehirlerFoto/izmir.jpg; Dokuz Eylül Üniversitesi,/public/sehirlerFoto/izmir2.jpg; İzmir Ekonomi Üniversitesi,/public/sehirlerFoto/izmir3.jpg; İzmir Yüksek Teknoloji Enstitüsü,/public/sehirlerFoto/izmir4.jpg  
+Kahramanmaraş: Kahramanmaraş Sütçü İmam Üniversitesi,/public/sehirlerFoto/kahramanmaras.jpg  
+Karabük: Karabük Üniversitesi,/public/sehirlerFoto/karabuk.jpg  
+Karaman: Karamanoğlu Mehmetbey Üniversitesi,/public/sehirlerFoto/karaman.jpg  
+Kars: Kafkas Üniversitesi,/public/sehirlerFoto/kars.jpg  
+Kastamonu: Kastamonu Üniversitesi,/public/sehirlerFoto/kastamonu.jpg  
+Kayseri: Erciyes Üniversitesi,/public/sehirlerFoto/kayseri.jpg; Abdullah Gül Üniversitesi,/public/sehirlerFoto/kayseri2.jpg; Nuh Naci Yazgan Üniversitesi,/public/sehirlerFoto/kayseri3.jpg  
+Kırıkkale: Kırıkkale Üniversitesi,/public/sehirlerFoto/kirikkale.jpg  
+Kırklareli: Kırklareli Üniversitesi,/public/sehirlerFoto/kirklareli.jpg  
+Kırşehir: Kırşehir Ahi Evran Üniversitesi,/public/sehirlerFoto/kirsehir.jpg  
+Kocaeli: Kocaeli Üniversitesi,/public/sehirlerFoto/kocaeli.jpg; Gebze Teknik Üniversitesi,/public/sehirlerFoto/kocaeli2.jpg  
+Konya: Selçuk Üniversitesi,/public/sehirlerFoto/konya.jpg; Necmettin Erbakan Üniversitesi,/public/sehirlerFoto/konya2.jpg; Konya Teknik Üniversitesi,/public/sehirlerFoto/konya3.jpg  
+Kütahya: Kütahya Dumlupınar Üniversitesi,/public/sehirlerFoto/kutahya.jpg; Kütahya Sağlık Bilimleri Üniversitesi,/public/sehirlerFoto/kutahya2.jpg  
+Malatya: İnönü Üniversitesi,/public/sehirlerFoto/malatya.jpg; Malatya Turgut Özal Üniversitesi,/public/sehirlerFoto/malatya2.jpg  
+Manisa: Manisa Celal Bayar Üniversitesi,/public/sehirlerFoto/manisa.jpg  
+Mardin: Mardin Artuklu Üniversitesi,/public/sehirlerFoto/mardin.jpg  
+Mersin: Mersin Üniversitesi,/public/sehirlerFoto/mersin.jpg; Tarsus Üniversitesi,/public/sehirlerFoto/mersin2.jpg  
+Muğla: Muğla Sıtkı Koçman Üniversitesi,/public/sehirlerFoto/mugla.jpg  
+Muş: Muş Alparslan Üniversitesi,/public/sehirlerFoto/mus.jpg  
+Nevşehir: Nevşehir Hacı Bektaş Veli Üniversitesi,/public/sehirlerFoto/nevsehir.jpg  
+Niğde: Niğde Ömer Halisdemir Üniversitesi,/public/sehirlerFoto/nigde.jpg  
+Ordu: Ordu Üniversitesi,/public/sehirlerFoto/ordu.jpg  
+Osmaniye: Osmaniye Korkut Ata Üniversitesi,/public/sehirlerFoto/osmaniye.jpg  
+Rize: Recep Tayyip Erdoğan Üniversitesi,/public/sehirlerFoto/rize.jpg  
+Sakarya: Sakarya Üniversitesi,/public/sehirlerFoto/sakarya.jpg; Sakarya Uygulamalı Bilimler Üniversitesi,/public/sehirlerFoto/sakarya2.jpg  
+Samsun: Ondokuz Mayıs Üniversitesi,/public/sehirlerFoto/samsun.jpg; Samsun Üniversitesi,/public/sehirlerFoto/samsun2.jpg  
+Siirt: Siirt Üniversitesi,/public/sehirlerFoto/siirt.jpg  
+Sinop: Sinop Üniversitesi,/public/sehirlerFoto/sinop.jpg  
+Sivas: Cumhuriyet Üniversitesi,/public/sehirlerFoto/sivas.jpg; Sivas Bilim ve Teknoloji Üniversitesi,/public/sehirlerFoto/sivas2.jpg  
+Şanlıurfa: Harran Üniversitesi,/public/sehirlerFoto/sanliurfa.jpg  
+Şırnak: Şırnak Üniversitesi,/public/sehirlerFoto/sirnak.jpg  
+Tekirdağ: Namık Kemal Üniversitesi,/public/sehirlerFoto/tekirdag.jpg; Tekirdağ Namık Kemal Üniversitesi,/public/sehirlerFoto/tekirdag2.jpg  
+Tokat: Tokat Gaziosmanpaşa Üniversitesi,/public/sehirlerFoto/tokat.jpg  
+Trabzon: Karadeniz Teknik Üniversitesi,/public/sehirlerFoto/trabzon.jpg; Trabzon Üniversitesi,/public/sehirlerFoto/trabzon2.jpg  
+Tunceli: Munzur Üniversitesi,/public/sehirlerFoto/tunceli.jpg  
+Uşak: Uşak Üniversitesi,/public/sehirlerFoto/usak.jpg  
+Van: Yüzüncü Yıl Üniversitesi,/public/sehirlerFoto/van.jpg; Van Yüzüncü Yıl Üniversitesi,/public/sehirlerFoto/van2.jpg  
+Yalova: Yalova Üniversitesi,/public/sehirlerFoto/yalova.jpg  
+Yozgat: Bozok Üniversitesi,/public/sehirlerFoto/yozgat.jpg; Yozgat Bozok Üniversitesi,/public/sehirlerFoto/yozgat2.jpg  
+Zonguldak: Bülent Ecevit Üniversitesi,/public/sehirlerFoto/zonguldak.jpg; Zonguldak Bülent Ecevit Üniversitesi,/public/sehirlerFoto/zonguldak2.jpg  
