@@ -1,32 +1,38 @@
 import React, { useState, useMemo } from "react";
 import dersResmi from "../../images/ders9.png";
 
-export default function AytKonular() {
-  const topics = {
-    Matematik: ["Limit", "Türev", "İntegral", "Denklemler"],
-    Fizik: ["Kuvvet ve Hareket", "Enerji", "Dalgalar", "Optik"],
-    Kimya: ["Atom Yapısı", "Dönüşümler", "Asitler ve Bazlar", "Organik Kimya"],
-    Biyoloji: ["Hücre", "Genetik", "Ekosistem", "Bitki ve Hayvanlar"],
-  };
+export default function AytFizikKonular() {
+  const topics = [
+    "Vektörler",
+    "Kuvvet ve Hareket",
+    "Newton’un Hareket Yasaları",
+    "İş, Güç ve Enerji",
+    "İtme ve Momentum",
+    "Tork ve Denge",
+    "Kütle Merkezi",
+    "Basit Makineler",
+    "Elektrik ve Manyetizma",
+    "Manyetik Alan ve Manyetik Kuvvet",
+    "Alternatif Akım",
+    "Dalga Mekaniği",
+    "Optik",
+    "Atom Modelleri",
+    "Modern Fizik ve Uygulamaları",
+  ];
 
-  const [completedTopics, setCompletedTopics] = useState({
-    Matematik: Array(topics.Matematik.length).fill(false),
-    Fizik: Array(topics.Fizik.length).fill(false),
-    Kimya: Array(topics.Kimya.length).fill(false),
-    Biyoloji: Array(topics.Biyoloji.length).fill(false),
-  });
+  const [completedTopics, setCompletedTopics] = useState(
+    Array(topics.length).fill(false)
+  );
 
   const progress = useMemo(() => {
-    const allTopics = Object.values(completedTopics).flat();
-    const completed = allTopics.filter(Boolean).length;
-    return Math.round((completed / allTopics.length) * 100);
+    const completed = completedTopics.filter(Boolean).length;
+    return Math.round((completed / topics.length) * 100);
   }, [completedTopics]);
 
-  const toggleTopic = (category, index) => {
-    setCompletedTopics((prev) => ({
-      ...prev,
-      [category]: prev[category].map((done, i) => (i === index ? !done : done)),
-    }));
+  const toggleTopic = (index) => {
+    setCompletedTopics((prev) =>
+      prev.map((done, i) => (i === index ? !done : done))
+    );
   };
 
   return (
@@ -35,23 +41,22 @@ export default function AytKonular() {
       {/* Üst Başlık Alanı */}
       <div className="relative w-full flex flex-col items-center">
         <div className="text-center space-y-4">
-          <h2 className="text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-400 text-transparent bg-clip-text">
-            AYT Konu Takibi
+          <h2 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-400 text-transparent bg-clip-text">
+            AYT Fizik Konu Takibi
           </h2>
-          <p className="text-md md:text-lg text-gray-700 max-w-xl mx-auto bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-inner">
-            📚 İlerlemeni adım adım takip et! Düzenli çalış, hedeflerine ulaş.
+          <p className="text-md md:text-lg text-gray-700 max-w-xl mx-auto bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-inner">
+            ⚡ Fizik konularında ilerlemeni kolayca takip et!
           </p>
         </div>
 
-       {/* Fotoğrafı sağ üst köşeye beyaz arka planla alıyoruz */}
-<div className="mt-6 absolute -top-20 right-5 w-40 h-40 md:w-48 md:h-48 rounded-full bg-white shadow-2xl flex items-center justify-center">
-  <img
-    src={dersResmi}
-    alt="Ders Çalışan Çocuk"
-    className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover"
-  />
-</div>
-
+        {/* Fotoğraf Sağ Üstte */}
+        <div className="mt-6 absolute -top-20 right-5 w-40 h-40 md:w-48 md:h-48 rounded-full bg-white shadow-2xl flex items-center justify-center">
+          <img
+            src={dersResmi}
+            alt="Fizik Çalışması"
+            className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover"
+          />
+        </div>
       </div>
 
       {/* Progress Circle */}
@@ -59,50 +64,42 @@ export default function AytKonular() {
         <div
           className="w-52 h-52 rounded-full flex items-center justify-center font-bold text-4xl shadow-lg relative bg-white"
           style={{
-            background: `conic-gradient(#a855f7 ${progress}%, #e5e7eb ${progress}%)`,
+            background: `conic-gradient(#3b82f6 ${progress}%, #e5e7eb ${progress}%)`,
           }}
         >
-          <span className="z-10 text-purple-700">{progress}%</span>
+          <span className="z-10 text-blue-700">{progress}%</span>
           <div className="absolute inset-4 rounded-full bg-white"></div>
         </div>
       </div>
 
       {/* Konular Listesi */}
-      <div className="w-full flex flex-col gap-10">
-        {Object.entries(topics).map(([category, topicList]) => (
-          <div
-            key={category}
-            className="bg-purple-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300"
-          >
-            <h3 className="text-2xl font-semibold text-purple-700 mb-6">{category}</h3>
-            <ul className="flex flex-col gap-4">
-              {topicList.map((topic, index) => (
-                <li
-                  key={topic}
-                  className="flex items-center justify-between bg-white p-4 rounded-xl shadow hover:bg-purple-100 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      checked={completedTopics[category][index]}
-                      onChange={() => toggleTopic(category, index)}
-                      className="w-5 h-5 accent-purple-500 cursor-pointer"
-                    />
-                    <span
-                      className={`text-base font-medium ${
-                        completedTopics[category][index]
-                          ? "line-through text-purple-400"
-                          : "text-purple-700"
-                      }`}
-                    >
-                      {topic}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <div className="w-full">
+        <h3 className="text-2xl font-semibold text-blue-700 mb-8">Fizik Konuları</h3>
+
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {topics.map((topic, index) => (
+            <li
+              key={topic}
+              className="flex items-center gap-4 bg-blue-50 p-4 rounded-2xl shadow hover:shadow-md hover:bg-blue-100 transition-all duration-300"
+            >
+              <input
+                type="checkbox"
+                checked={completedTopics[index]}
+                onChange={() => toggleTopic(index)}
+                className="w-5 h-5 accent-blue-500 cursor-pointer"
+              />
+              <span
+                className={`text-base font-medium ${
+                  completedTopics[index]
+                    ? "line-through text-blue-400"
+                    : "text-blue-700"
+                }`}
+              >
+                {topic}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
 
     </div>

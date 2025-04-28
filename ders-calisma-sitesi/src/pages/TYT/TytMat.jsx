@@ -31,7 +31,7 @@ export default function AytKonular() {
 
   return (
     <div className="mt-[100px] px-6 py-10 bg-white rounded-3xl shadow-2xl w-full max-w-6xl mx-auto flex flex-col items-center space-y-20">
-      
+
       {/* Üst Başlık Alanı */}
       <div className="relative w-full flex flex-col items-center">
         <div className="text-center space-y-4">
@@ -43,14 +43,14 @@ export default function AytKonular() {
           </p>
         </div>
 
-       {/* Fotoğrafı sağ üst köşeye beyaz arka planla alıyoruz */}
-<div className="mt-6 absolute -top-20 right-5 w-40 h-40 md:w-48 md:h-48 rounded-full bg-white shadow-2xl flex items-center justify-center">
-  <img
-    src={dersResmi}
-    alt="Ders Çalışan Çocuk"
-    className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover"
-  />
-</div>
+        {/* Fotoğrafı sağ üst köşeye beyaz arka planla alıyoruz */}
+        <div className="mt-6 absolute -top-20 right-5 w-40 h-40 md:w-48 md:h-48 rounded-full bg-white shadow-2xl flex items-center justify-center">
+          <img
+            src={dersResmi}
+            alt="Ders Çalışan Çocuk"
+            className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover"
+          />
+        </div>
 
       </div>
 
@@ -89,11 +89,10 @@ export default function AytKonular() {
                       className="w-5 h-5 accent-purple-500 cursor-pointer"
                     />
                     <span
-                      className={`text-base font-medium ${
-                        completedTopics[category][index]
+                      className={`text-base font-medium ${completedTopics[category][index]
                           ? "line-through text-purple-400"
                           : "text-purple-700"
-                      }`}
+                        }`}
                     >
                       {topic}
                     </span>
