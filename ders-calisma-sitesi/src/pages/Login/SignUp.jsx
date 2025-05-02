@@ -18,64 +18,102 @@ const SignUp = () => {
       if (res.status === 201) {
         navigate("/login");
       } else {
-        console.error("Kayıt başarısız: ", res.status);
+        const errorData = await res.json();
+        alert(errorData.message || "Kayıt başarısız!");
+        console.error("Kayıt başarısız:", res.status, errorData);
       }
     } catch (error) {
-      console.error("Hata oluştu: ", error);
+      console.error("Kayıt sırasında bir hata oluştu:", error);
+      alert("Kayıt sırasında bir hata oluştu.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Kayıt Ol</h2>
-        <form onSubmit={handleSignup}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">Kullanıcı Adı</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-              placeholder="Kullanıcı adınızı girin"
-              required
-            />
+    <div className="min-h-screen bg-gradient-to-tr from-teal-400 to-lime-500 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white shadow-xl rounded-xl p-10">
+        <div className="text-center">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Hesap Oluştur
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Yeni bir maceraya adım atın!
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSignup}>
+          <input type="hidden" name="remember" defaultValue="true" />
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="username" className="sr-only">
+                Kullanıcı Adı
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-1 sm:text-sm"
+                placeholder="Kullanıcı Adınız"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="email-address" className="sr-only">
+                E-posta Adresi
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-1 sm:text-sm"
+                placeholder="E-posta Adresiniz"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Şifre
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-1 sm:text-sm"
+                placeholder="Şifreniz"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">E-posta</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-              placeholder="E-posta adresinizi girin"
-              required
-            />
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent font-semibold rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-150"
+            >
+              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                <svg className="h-5 w-5 text-green-500 group-hover:text-green-400 transition-all duration-150" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v2h-2a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
+                </svg>
+              </span>
+              Kayıt Ol
+            </button>
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 font-medium mb-2">Şifre</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-              placeholder="Şifrenizi girin"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-red-700 text-white py-2 rounded-md hover:bg-red-600 transition"
-          >
-            Kayıt Ol
-          </button>
-          <p className="mt-4 text-center">
-            Zaten hesabınız mı var?{" "}
-            <a href="/login" className="text-red-500 hover:underline">
-              Giriş Yap
+        </form>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Zaten bir hesabınız var mı?{' '}
+            <a href="/login" className="font-semibold text-green-600 hover:text-green-500">
+              Giriş Yapın
             </a>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );
