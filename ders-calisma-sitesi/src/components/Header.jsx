@@ -91,7 +91,7 @@ const Header = () => {
         <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
             <div className="flex items-center justify-between px-6 lg:px-16 h-20 max-w-screen-xl mx-auto">
                 <div className="flex items-center gap-6 lg:gap-8">
-                    <Link to="/" className="flex-shrink-0">
+                    <Link to="/Home" className="flex-shrink-0">
                         <img src="/logo2.jpg" alt="Site Logosu" className="h-20 w-auto" />
                     </Link>
 

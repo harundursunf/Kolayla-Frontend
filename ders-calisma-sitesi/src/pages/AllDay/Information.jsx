@@ -2,65 +2,65 @@ import React, { useState, useEffect } from "react";
 
 const Bilgiler = () => {
     const [sozler, setSozler] = useState([]);
-    const [guncelSoz, setGuncelSoz] = useState("");
+    const [guncelSoz, setGuncelSoz] = useState(null);
     const [favoriler, setFavoriler] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // bilgiler.txt dosyasını yükle
+    // User ID'yi token'dan ya da örnek olarak hardcoded alabiliriz
+    const userId = 4;
+
     useEffect(() => {
         const fetchSozler = async () => {
             try {
-                // public klasörüne doğrudan erişim genellikle root üzerinden yapılır.
-                const response = await fetch("/bilgiler.txt"); // '/public/' yerine '/' deneyin
-                if (!response.ok) throw new Error("Veri yüklenirken bir hata oluştu!");
-                const data = await response.text();
-                const sozListesi = data.split("\n").map((soz) => soz.trim()).filter(soz => soz.length > 0); // Boş satırları filtrele
-                setSozler(sozListesi);
-                if (sozListesi.length > 0) {
-                    setGuncelSoz(sozListesi[Math.floor(Math.random() * sozListesi.length)]);
+                const response = await fetch("https://localhost:5001/api/Fact");
+                if (!response.ok) throw new Error("Veri alınamadı.");
+                const data = await response.json();
+                setSozler(data);
+                if (data.length > 0) {
+                    const rastgele = data[Math.floor(Math.random() * data.length)];
+                    setGuncelSoz(rastgele);
                 } else {
-                    setGuncelSoz("Yüklenecek bilgi bulunamadı.");
+                    setGuncelSoz({ content: "Gösterilecek bilgi yok." });
                 }
-                setLoading(false);
-            } catch (error) {
-                console.error("Bilgiler yüklenirken bir hata oluştu:", error);
-                setGuncelSoz("Bilgiler yüklenirken hata oluştu.");
+            } catch (err) {
+                console.error("Hata:", err);
+                setGuncelSoz({ content: "Bilgi alınırken hata oluştu." });
+            } finally {
                 setLoading(false);
             }
         };
+
         fetchSozler();
-
-        // Local Storage'dan favorileri yükle (isteğe bağlı ama kullanıcı deneyimi için güzel)
-        const savedFavoriler = localStorage.getItem("favoriBilgiler");
-        if (savedFavoriler) {
-            setFavoriler(JSON.parse(savedFavoriler));
-        }
-
     }, []);
 
-    // Favoriler değiştiğinde Local Storage'a kaydet
-    useEffect(() => {
-        if (favoriler.length > 0) {
-            localStorage.setItem("favoriBilgiler", JSON.stringify(favoriler));
-        } else {
-            localStorage.removeItem("favoriBilgiler"); // Favori yoksa storage'ı temizle
-        }
-    }, [favoriler]);
-
-
     const rastgeleSozSec = () => {
-        if (sozler.length === 0) return; // Boşsa bir şey yapma
-        let rastgeleIndex = Math.floor(Math.random() * sozler.length);
-        // Aynı sözün tekrar gelmemesi için (isteğe bağlı)
-        while (sozler[rastgeleIndex] === guncelSoz && sozler.length > 1) {
-            rastgeleIndex = Math.floor(Math.random() * sozler.length);
+        if (sozler.length === 0) return;
+        let rastgele = sozler[Math.floor(Math.random() * sozler.length)];
+        while (guncelSoz && rastgele.id === guncelSoz.id && sozler.length > 1) {
+            rastgele = sozler[Math.floor(Math.random() * sozler.length)];
         }
-        setGuncelSoz(sozler[rastgeleIndex]);
+        setGuncelSoz(rastgele);
     };
 
-    const favoriSozEkle = () => {
-        if (guncelSoz && !favoriler.includes(guncelSoz) && guncelSoz !== "Bilgiler yükleniyor..." && guncelSoz !== "Bilgi yok" && guncelSoz !== "Bilgiler yüklenirken hata oluştu.") {
+    const favoriSozEkle = async () => {
+        if (!guncelSoz || favoriler.find(fav => fav.id === guncelSoz.id)) return;
+
+        try {
+            const response = await fetch("https://localhost:5001/api/FavoriteFact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId,
+                    factId: guncelSoz.id
+                })
+            });
+
+            if (!response.ok) throw new Error("Favori eklenemedi.");
             setFavoriler([...favoriler, guncelSoz]);
+        } catch (err) {
+            console.error("Favori ekleme hatası:", err);
         }
     };
 
@@ -78,7 +78,7 @@ const Bilgiler = () => {
                     🌟 Her gün yeni bir ilham kaynağı!
                 </p>
                 <div className="text-xl italic text-gray-800 mb-8 text-center">
-                    {loading ? "Bilgiler yükleniyor..." : guncelSoz || "Bilgi yok"}
+                    {loading ? "Bilgiler yükleniyor..." : guncelSoz?.content || "Bilgi yok"}
                 </div>
                 <div className="flex justify-center space-x-4">
                     <button
@@ -102,12 +102,12 @@ const Bilgiler = () => {
                                 {favoriler.map((soz, index) => (
                                     <div
                                         key={index}
-                                        className="p-4 rounded-lg shadow-md bg-white border border-gray-300 flex flex-col justify-between space-y-3" // Flex direction column ve boşluk ekledik
+                                        className="p-4 rounded-lg shadow-md bg-white border border-gray-300 flex flex-col justify-between space-y-3"
                                     >
-                                        <span className="text-gray-800">{soz}</span> {/* Text artık tüm alanı kaplayabilir */}
+                                        <span className="text-gray-800">{soz.content}</span>
                                         <button
                                             onClick={() => favoriSozSil(index)}
-                                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-transform transform hover:scale-105 w-full" // w-full ekledik
+                                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-transform transform hover:scale-105 w-full"
                                         >
                                             Sil
                                         </button>
