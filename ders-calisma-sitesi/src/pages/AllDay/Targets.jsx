@@ -71,8 +71,7 @@ const Personal = () => {
                 console.error(err);
             }
         }
-    };
-    
+    }; 
     const deleteGoal = (index) => {
         setGoals(goals.filter((_, i) => i !== index));
         // API silme işlemi buraya eklenebilir

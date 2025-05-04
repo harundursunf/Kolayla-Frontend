@@ -1,191 +1,252 @@
-    import React, { useState, useEffect } from 'react';
-    import { FaBookOpen, FaHeart } from 'react-icons/fa';
-    import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { FaBookOpen, FaHeart, FaClock, FaStickyNote, FaBullseye } from 'react-icons/fa'; // İkonlar
+import { motion } from 'framer-motion';
+import axios from 'axios'; // Axios importu
 
-    const Profile = () => {
-        const [completedTopicsCount, setCompletedTopicsCount] = useState(15);
-        const [favoriteMotivation, setFavoriteMotivation] = useState("Başarıya giden yolda en önemli adım başlamaktır.");
-        const [user, setUser] = useState(null);
-        const [loading, setLoading] = useState(true);
-        const [error, setError] = useState(null);
+const Profile = () => {
 
-        useEffect(() => {
-            const token = localStorage.getItem("token");
-            const getUserIdFromToken = (jwtToken) => {
-                if (!jwtToken) return null;
-                try {
-                    const payloadBase64 = jwtToken.split(".")[1];
-                    if (!payloadBase64) return null;
-                    const payloadJson = atob(payloadBase64);
-                    const decodedPayload = JSON.parse(payloadJson);
-                    const userIdKey = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
-                    return String(decodedPayload[userIdKey]);
-                } catch (error) {
-                    console.error("Token decode hatası:", error);
-                    return null;
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const [totalStudyTime, setTotalStudyTime] = useState("0 saat");
+    const [totalCompletedTopics, setTotalCompletedTopics] = useState(0);
+    const [totalNotes, setTotalNotes] = useState(0);
+    const [totalGoals, setTotalGoals] = useState(0);
+
+    const [favoriteMotivation, setFavoriteMotivation] = useState("Başarıya giden yolda en önemli adım başlamaktır.");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        
+        const getUserIdFromToken = (jwtToken) => {
+            if (!jwtToken) return null;
+            try {
+                const payloadBase64 = jwtToken.split(".")[1];
+                if (!payloadBase64) return null;
+                const payloadJson = atob(payloadBase64);
+                const decodedPayload = JSON.parse(payloadJson);
+                const userIdClaimKey = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+                const userId = decodedPayload[userIdClaimKey] || decodedPayload.sub || decodedPayload.id;
+                if (userId !== undefined) {
+                    return String(userId);
                 }
-            };
+                console.error("User ID claim not found in token payload.");
+                return null;
+            } catch (error) {
+                console.error("Token decode hatası:", error);
+                return null;
+            }
+        };
 
-            const fetchUserProfile = async (userIdToFetch) => {
-                setLoading(true);
-                setError(null);
-                const currentToken = localStorage.getItem("token");
-                if (!currentToken) {
-                    setError("Yetkilendirme token'ı bulunamadı.");
-                    setLoading(false);
-                    return;
+        const fetchUserProfileAndStats = async (userIdToFetch) => {
+            setLoading(true);
+            setError(null);
+            const currentToken = localStorage.getItem("token");
+            if (!currentToken) {
+                setError("Yetkilendirme token'ı bulunamadı.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // --- Fetch User Basic Info ---
+                const userResponse = await fetch(`https://localhost:5001/api/Users/${userIdToFetch}`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (!userResponse.ok) {
+                    let errorMessage = "Profil verisi alınamadı.";
+                    if (userResponse.status === 401) errorMessage = "Oturumunuz sonlanmış olabilir.";
+                    if (userResponse.status === 404) errorMessage = `Kullanıcı ID (${userIdToFetch}) bulunamadı.`;
+                    throw new Error(errorMessage);
+                }
+                const userData = await userResponse.json();
+                setUser(userData);
+
+                // Fetch completed topics count
+                const topicResponse = await axios.get("https://localhost:5001/api/Topic", {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                if (topicResponse.data) {
+                    setTotalCompletedTopics(topicResponse.data.length); // Assuming response is an array
                 }
 
-                try {
-                    const response = await fetch(`https://localhost:5001/api/Users/${userIdToFetch}`, {
-                        headers: { 'Authorization': `Bearer ${currentToken}` }
-                    });
-                    if (!response.ok) {
-                        let errorMessage = "Profil verisi alınamadı.";
-                        if (response.status === 401) errorMessage = "Oturumunuz sonlanmış olabilir.";
-                        if (response.status === 404) errorMessage = `Kullanıcı ID (${userIdToFetch}) bulunamadı.`;
-                        setError(errorMessage);
-                        setLoading(false);
-                        return;
-                    }
-                    const data = await response.json();
-                    setUser(data);
-                } catch (error) {
-                    console.error("Profil bilgileri alınırken hata:", error);
-                    setError(`Profil bilgileri alınamadı: ${error.message}`);
-                } finally {
-                    setLoading(false);
-                }
-            };
+                if (userData.totalStudyTime !== undefined) setTotalStudyTime(userData.totalStudyTime);
+                if (userData.totalNotes !== undefined) setTotalNotes(userData.totalNotes);
+                if (userData.totalGoals !== undefined) setTotalGoals(userData.totalGoals);
 
-            if (token) {
-                const userId = getUserIdFromToken(token);
-                if (userId) {
-                    fetchUserProfile(userId);
-                } else {
-                    setError("Geçersiz token.");
-                    setLoading(false);
+                // Fetch DailyGoal count
+                const dailyGoalResponse = await axios.get("https://localhost:5001/api/DailyGoal", {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+                if (dailyGoalResponse.data) {
+                    setTotalGoals(dailyGoalResponse.data.length); // Assuming response is an array
                 }
-            } else {
-                setError("Profilinizi görmek için lütfen giriş yapın.");
+
+            } catch (error) {
+                console.error("Profil veya istatistik bilgileri alınırken hata:", error);
+                setError(`Bilgiler alınamadı: ${error.message}`);
+            } finally {
                 setLoading(false);
             }
-        }, []);
-
-        const containerVariants = {
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-            exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeInOut" } },
         };
 
-        const profileCardVariants = {
-            initial: { scale: 0.95, opacity: 0 },
-            animate: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeInOut", delay: 0.2 } },
-        };
-
-        const infoItemVariants = {
-            initial: { opacity: 0, x: -10 },
-            animate: { opacity: 1, x: 0, transition: { duration: 0.3, ease: "easeInOut", delay: 0.4 } },
-        };
-
-        const iconStyle = { fontSize: '1.5rem', marginRight: '0.75rem' };
-
-        if (loading) {
-            return (
-                <motion.div
-                    className="min-h-screen flex justify-center items-center bg-gradient-to-br from-indigo-100 to-blue-200"
-                    variants={containerVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                >
-                    <motion.p className="text-blue-600 font-semibold text-lg">Profil Yükleniyor...</motion.p>
-                </motion.div>
-            );
+        if (token) {
+            const userId = getUserIdFromToken(token);
+            if (userId) {
+                fetchUserProfileAndStats(userId);
+            } else {
+                setError("Geçersiz veya eksik token.");
+                setLoading(false);
+            }
+        } else {
+            setError("Profilinizi görmek için lütfen giriş yapın.");
+            setLoading(false);
         }
+    }, []);
 
-        if (error) {
-            return (
-                <motion.div
-                    className="min-h-screen flex flex-col justify-center items-center text-center bg-gradient-to-br from-red-100 to-orange-100 p-6"
-                    variants={containerVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                >
-                    <motion.p className="text-red-600 font-semibold text-lg mb-4">{error}</motion.p>
-                    {/* Giriş yap butonu buraya eklenebilir */}
-                </motion.div>
-            );
-        }
+    const containerVariants = {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeInOut" } },
+        exit: { opacity: 0, y: -20, transition: { duration: 0.4, ease: "easeInOut" } },
+    };
 
-        if (!user) {
-            return (
-                <motion.div
-                    className="min-h-screen flex justify-center items-center bg-gray-100"
-                    variants={containerVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                >
-                    <motion.p className="text-gray-600">Kullanıcı bilgisi bulunamadı.</motion.p>
-                    {/* Giriş yap butonu buraya eklenebilir */}
-                </motion.div>
-            );
-        }
+    const profileCardVariants = {
+        initial: { scale: 0.9, opacity: 0 },
+        animate: { scale: 1, opacity: 1, transition: { duration: 0.5, ease: "easeInOut", delay: 0.3 } },
+    };
 
+    const itemVariants = {
+        initial: { opacity: 0, x: -15 },
+        animate: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    };
+
+    const iconStyle = { fontSize: '1.6rem', marginRight: '1rem' };
+
+    if (loading) {
         return (
             <motion.div
-                className="min-h-screen bg-gradient-to-br from-indigo-100 to-blue-200 py-16 flex justify-center items-center"
+                className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-100 to-indigo-200 p-6"
                 variants={containerVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
             >
-                <motion.div
-                    className="bg-white rounded-xl shadow-lg overflow-hidden max-w-md md:max-w-lg"
-                    variants={profileCardVariants}
-                >
-                    <div className="p-8">
-                        <div className="text-center mb-6">
-                            <svg
-                                className="mx-auto h-24 w-24 rounded-full bg-indigo-200 text-indigo-700 flex items-center justify-center"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <h2 className="mt-4 text-xl font-semibold text-gray-800">{user?.name || 'Kullanıcı'}</h2>
-                            {user?.email && <p className="text-gray-600 text-sm">{user.email}</p>}
-                        </div>
-
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-indigo-600 mb-3">İstatistikler</h3>
-                            <motion.div className="space-y-2 text-gray-700" variants={infoItemVariants}>
-                                <div className="flex items-center">
-                                    <FaBookOpen style={iconStyle} className="text-blue-500" />
-                                    <span>Tamamlanan Konu Sayısı: <span className="font-semibold text-indigo-800">{completedTopicsCount}</span></span>
-                                </div>
-                                <div className="flex items-center">
-                                    <FaHeart style={iconStyle} className="text-red-500" />
-                                    <span>Favori Motivasyon: <span className="italic text-gray-600">"{favoriteMotivation}"</span></span>
-                                </div>
-                                {/* Diğer istatistikler buraya eklenebilir */}
-                            </motion.div>
-                        </div>
-
-                        {/* İsteğe bağlı: Kullanıcıya özel diğer bilgiler */}
-                        {user?.bio && (
-                            <div>
-                                <h3 className="text-lg font-semibold text-indigo-600 mb-3">Hakkımda</h3>
-                                <p className="text-gray-700">{user.bio}</p>
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
+                <div className="w-12 h-12 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mb-4"></div>
+                <motion.p className="text-blue-700 font-semibold text-lg">Profil Yükleniyor...</motion.p>
             </motion.div>
         );
-    };
+    }
 
-    export default Profile;
+    if (error) {
+        return (
+            <motion.div
+                className="min-h-screen flex flex-col justify-center items-center text-center bg-gradient-to-br from-red-100 to-orange-100 p-6"
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+            >
+                <motion.p className="text-red-700 font-semibold text-xl mb-6">{error}</motion.p>
+                {error.includes("giriş yapın") && (
+                    <motion.button
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => { /* Redirect to login page */ console.log("Yönlendirme yapılacak"); }}
+                    >
+                        Giriş Yap
+                    </motion.button>
+                )}
+            </motion.div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <motion.div
+                className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6"
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+            >
+                <motion.p className="text-gray-600 text-lg mb-4">Kullanıcı bilgisi bulunamadı.</motion.p>
+            </motion.div>
+        );
+    }
+
+    return (
+        <motion.div
+            className="mt-9 min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 py-16 px-4 flex justify-center items-center"
+            variants={containerVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+        >
+            <motion.div
+                className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-lg lg:max-w-xl p-8"
+                variants={profileCardVariants}
+            >
+                {/* Profile Header */}
+                <div className="text-center mb-10">
+                    <div className="mx-auto h-28 w-28 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 text-white flex items-center justify-center text-4xl font-bold mb-4">
+                        {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-800">{user?.name || 'Kullanıcı'}</h2>
+                    {user?.email && <p className="text-gray-600 text-md mt-1">{user.email}</p>}
+                </div>
+
+                {/* Statistics Section */}
+                <div className="mb-10">
+                    <h3 className="text-2xl font-bold text-indigo-600 border-b-2 border-indigo-200 pb-2 mb-6">İstatistiklerim</h3>
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        variants={{
+                           animate: { transition: { staggerChildren: 0.1 } },
+                        }}
+                    >
+                        {/* Completed Topics */}
+                        <motion.div className="flex items-center bg-blue-50 p-4 rounded-lg shadow-sm" variants={itemVariants}>
+                            <FaBookOpen style={iconStyle} className="text-blue-600" />
+                            <div>
+                                <p className="text-sm text-gray-600">Tamamlanan Konu Sayısı</p>
+                                <span className="text-xl font-bold text-blue-800">{totalCompletedTopics}</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Total Study Time */}
+                        <motion.div className="flex items-center bg-green-50 p-4 rounded-lg shadow-sm" variants={itemVariants}>
+                            <FaClock style={iconStyle} className="text-green-600" />
+                            <div>
+                                <p className="text-sm text-gray-600">Toplam Çalışma Süresi</p>
+                                <span className="text-xl font-bold text-green-800">{totalStudyTime}</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Total Notes */}
+                        <motion.div className="flex items-center bg-yellow-50 p-4 rounded-lg shadow-sm" variants={itemVariants}>
+                            <FaStickyNote style={iconStyle} className="text-yellow-600" />
+                            <div>
+                                <p className="text-sm text-gray-600">Toplam Not Sayısı</p>
+                                <span className="text-xl font-bold text-yellow-800">{totalNotes}</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Total Goals */}
+                        <motion.div className="flex items-center bg-purple-50 p-4 rounded-lg shadow-sm" variants={itemVariants}>
+                            <FaBullseye style={iconStyle} className="text-purple-600" />
+                            <div>
+                                <p className="text-sm text-gray-600">Toplam Hedef Sayısı</p>
+                                <span className="text-xl font-bold text-purple-800">{totalGoals}</span>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+};
+
+export default Profile;

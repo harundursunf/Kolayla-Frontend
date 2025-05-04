@@ -1,28 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Notlarım = () => {
     const [notes, setNotes] = useState([]);
     const [note, setNote] = useState('');
     const [isPriority, setIsPriority] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const userId = 1; // Giriş yapan kullanıcıdan almalı, örnek olarak 1 yazıldı.
 
-    const handleAddNote = () => {
-        if (note.trim()) {
-            setNotes([...notes, { text: note, isPriority, date: new Date().toLocaleDateString(), isFavorite: false }]);
-            setNote('');
-            setIsPriority(false);
+    const API_URL = 'https://localhost:5001/api/Note';
+
+    useEffect(() => {
+        fetchNotes();
+    }, []);
+
+    const fetchNotes = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/user/${userId}`);
+            setNotes(response.data);
+        } catch (error) {
+            console.error('Notlar çekilemedi:', error);
         }
     };
 
-    const handleDeleteNote = (index) => {
-        const updatedNotes = notes.filter((_, i) => i !== index);
-        setNotes(updatedNotes);
+    const handleAddNote = async () => {
+        if (note.trim()) {
+            const newNote = {
+                userId,
+                text: note,
+                isPriority,
+                createdDate: new Date().toISOString()
+            };
+
+            try {
+                await axios.post(API_URL, newNote);
+                fetchNotes();
+                setNote('');
+                setIsPriority(false);
+            } catch (error) {
+                console.error('Not eklenemedi:', error);
+            }
+        }
     };
 
-    const handleToggleFavorite = (index) => {
-        const updatedNotes = [...notes];
-        updatedNotes[index].isFavorite = !updatedNotes[index].isFavorite;
-        setNotes(updatedNotes);
+    const handleDeleteNote = async (id) => {
+        try {
+            await axios.delete(`${API_URL}/${id}`);
+            fetchNotes();
+        } catch (error) {
+            console.error('Not silinemedi:', error);
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -78,9 +105,9 @@ const Notlarım = () => {
 
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredNotes.length > 0 ? (
-                    filteredNotes.map((note, index) => (
+                    filteredNotes.map((note) => (
                         <div
-                            key={index}
+                            key={note.id}
                             className="p-4 rounded-lg shadow-md flex flex-col justify-between border bg-white"
                         >
                             <div>
@@ -90,17 +117,13 @@ const Notlarım = () => {
                                     )}
                                     <span className="text-gray-800">{note.text}</span>
                                 </div>
-                                <div className="text-sm text-gray-500 mt-2">Tarih: {note.date}</div>
+                                <div className="text-sm text-gray-500 mt-2">Tarih: {new Date(note.createdDate).toLocaleDateString()}</div>
                             </div>
                             <div className="flex justify-between items-center mt-3">
+                                {/* Favori işlevi backend'e bağlı değil, kaldırıldı */}
+                                <div></div>
                                 <button
-                                    onClick={() => handleToggleFavorite(index)}
-                                    className={`font-bold py-1 px-3 rounded-full ${note.isFavorite ? 'text-yellow-500' : 'text-gray-500'}`}
-                                >
-                                    {note.isFavorite ? '⭐' : 'Favori'}
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteNote(index)}
+                                    onClick={() => handleDeleteNote(note.id)}
                                     className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-full shadow-lg"
                                 >
                                     Sil

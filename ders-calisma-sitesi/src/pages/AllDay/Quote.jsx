@@ -6,29 +6,29 @@ const GunlukSoz = () => {
     const [favoriler, setFavoriler] = useState([]);
     const [loading, setLoading] = useState(true);
 
-   
+
     useEffect(() => {
-           const fetchSozler = async () => {
-               try {
-                   const response = await fetch("https://localhost:5001/api/Q");
-                   if (!response.ok) throw new Error("Veri yüklenirken bir hata oluştu!");
-   
-                   const data = await response.json(); // JSON olarak alıyoruz
-                   const sozListesi = data.map(item => item.text).filter(soz => soz.length > 0);
-   
-                   setSozler(sozListesi);
-                   if (sozListesi.length > 0) {
-                       setGuncelSoz(sozListesi[Math.floor(Math.random() * sozListesi.length)]);
-                   } else {
-                       setGuncelSoz("Yüklenecek bilgi bulunamadı.");
-                   }
-                   setLoading(false);
-               } catch (error) {
-                   console.error("Bilgiler yüklenirken bir hata oluştu:", error);
-                   setGuncelSoz("Bilgiler yüklenirken hata oluştu.");
-                   setLoading(false);
-               }
-           };
+        const fetchSozler = async () => {
+            try {
+                const response = await fetch("https://localhost:5001/api/Quote");
+                if (!response.ok) throw new Error("Veri yüklenirken bir hata oluştu!");
+
+                const data = await response.json(); // JSON olarak alıyoruz
+                const sozListesi = data.map(item => item.text).filter(soz => soz.length > 0);
+
+                setSozler(sozListesi);
+                if (sozListesi.length > 0) {
+                    setGuncelSoz(sozListesi[Math.floor(Math.random() * sozListesi.length)]);
+                } else {
+                    setGuncelSoz("Yüklenecek bilgi bulunamadı.");
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error("Bilgiler yüklenirken bir hata oluştu:", error);
+                setGuncelSoz("Bilgiler yüklenirken hata oluştu.");
+                setLoading(false);
+            }
+        };
 
         fetchSozler();
     }, []);

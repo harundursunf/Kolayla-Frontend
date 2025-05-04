@@ -1,67 +1,76 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import axios from "axios";
 import dersResmi from "../../images/ders4.png";
 
-export default function AytKonular() {
-  const topics = {
-    Matematik: [
-      "Temel Kavramlar",
-      "Sayılar ve Özellikleri",
-      "Bölme ve Bölünebilme",
-      "Asal Çarpanlar ve Tam Bölen Sayısı",
-      "EBOB - EKOK",
-      "Rasyonel Sayılar",
-      "Ondalık Sayılar",
-      "Sıralama ve Seçme",
-      "Mutlak Değer",
-      "Üslü Sayılar",
-      "Köklü Sayılar",
-      "Çarpanlara Ayırma",
-      "Oran-Orantı",
-      "Denklem Çözme",
-      "Problemler",
-      "Kümeler",
-      "Fonksiyonlar",
-      "Permütasyon, Kombinasyon, Binom ve Olasılık",
-      "İstatistik ve Grafikler",
-      "Polinomlar",
-      "2. Dereceden Denklemler",
-      "Parabol",
-      "Karmaşık Sayılar",
-      "Logaritma",
-      "Diziler",
-      "Limit",
-      "Süreklilik",
-      "Türev",
-      "Türev Uygulamaları",
-      "İntegral",
-      "İntegral Uygulamaları"
-    ],
-  };
+export default function AytMatematikKonular() {
+  const [topics, setTopics] = useState([]);
+  const [completedTopics, setCompletedTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(1);  // Giriş yapan kullanıcının ID'sini burada alabilirsiniz (JWT ile)
 
-  const [completedTopics, setCompletedTopics] = useState({
-    Matematik: Array(topics.Matematik.length).fill(false),
-  });
+  // API'den Matematik konularını çek
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const response = await axios.get("https://localhost:5001/api/Topic");
+        const topicList = response.data;
+
+        const filteredTopics = topicList.filter(
+          (topic) => topic.lessonType === "AYT" && topic.category === "Matematik"
+        );
+
+        setTopics(filteredTopics);
+
+        // Kullanıcının tamamladığı konuları backend'den al
+        const completedResponse = await axios.get(`https://localhost:5001/api/CompletedTopic/getbyuser/${userId}`);
+        const completed = completedResponse.data.map(item => item.topicId);
+        setCompletedTopics(completed);
+      } catch (error) {
+        console.error("Veri çekme hatası:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopics();
+  }, [userId]);
 
   const progress = useMemo(() => {
-    const allTopics = Object.values(completedTopics).flat();
-    const completed = allTopics.filter(Boolean).length;
-    if (allTopics.length === 0) return 0;
-    return Math.round((completed / allTopics.length) * 100);
+    const completed = completedTopics.filter(Boolean).length;
+    return completedTopics.length === 0
+      ? 0
+      : Math.round((completed / completedTopics.length) * 100);
   }, [completedTopics]);
 
-  const toggleTopic = (category, index) => {
-    setCompletedTopics((prev) => ({
-      ...prev,
-      [category]: prev[category].map((done, i) => (i === index ? !done : done)),
-    }));
+  const toggleTopic = async (topicId) => {
+    const isCompleted = completedTopics.includes(topicId);
+    if (isCompleted) {
+      // Eğer konu tamamlanmışsa, sil
+      setCompletedTopics(prev => prev.filter(id => id !== topicId));
+      await axios.delete(`https://localhost:5001/api/CompletedTopic/delete/${topicId}`);
+    } else {
+      // Eğer konu tamamlanmamışsa, ekle
+      setCompletedTopics(prev => [...prev, topicId]);
+      await axios.post("https://localhost:5001/api/CompletedTopic/add", {
+        userId,
+        topicId,
+        completedDate: new Date().toISOString(),
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="mt-32 text-center text-xl text-purple-600 font-semibold">
+        Yükleniyor...
+      </div>
+    );
+  }
 
   return (
     <div className="mt-[100px] px-6 py-10 bg-white rounded-3xl shadow-2xl w-full max-w-6xl mx-auto flex flex-col items-center space-y-20">
-
       {/* Üst Alan */}
       <div className="w-full flex flex-col md:flex-row justify-between items-center relative">
-
         {/* Sol: Progress Circle */}
         <div className="relative w-60 h-60 flex items-center justify-center">
           <div
@@ -93,33 +102,33 @@ export default function AytKonular() {
             className="w-full h-full object-cover"
           />
         </div>
-
       </div>
 
+      {/* Konu Listesi */}
       <div className="w-full flex flex-col gap-10">
         <div className="bg-purple-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
           <h3 className="text-2xl font-semibold text-purple-700 mb-6">Matematik</h3>
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {topics.Matematik.map((topic, index) => (
+            {topics.map((topic) => (
               <li
-                key={topic}
+                key={topic.id}
                 className="flex items-center justify-between bg-white p-4 rounded-xl shadow hover:shadow-md hover:bg-purple-100 transition-all duration-300"
               >
                 <div className="flex items-center gap-4">
                   <input
                     type="checkbox"
-                    checked={completedTopics.Matematik[index]}
-                    onChange={() => toggleTopic("Matematik", index)}
+                    checked={completedTopics.includes(topic.id)}
+                    onChange={() => toggleTopic(topic.id)}
                     className="w-5 h-5 accent-purple-500 cursor-pointer"
                   />
                   <span
                     className={`text-base font-medium ${
-                      completedTopics.Matematik[index]
+                      completedTopics.includes(topic.id)
                         ? "line-through text-purple-400"
                         : "text-purple-700"
                     }`}
                   >
-                    {topic}
+                    {topic.name}
                   </span>
                 </div>
               </li>
@@ -127,7 +136,6 @@ export default function AytKonular() {
           </ul>
         </div>
       </div>
-
     </div>
   );
 }

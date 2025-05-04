@@ -16,7 +16,7 @@ export default function AytMatematikKonular() {
 
         const filteredTopics = topicList.filter(
           (topic) =>
-            topic.lessonType === "AYT" && topic.category === "Biyoloji"
+            topic.lessonType === "AYT" && topic.category === "Fizik"
         );
 
         setTopics(filteredTopics);
@@ -72,7 +72,7 @@ export default function AytMatematikKonular() {
         {/* Orta: Başlık ve Açıklama */}
         <div className="flex flex-col items-center space-y-4 text-center mt-8 md:mt-0">
           <h2 className="text-5xl font-extrabold bg-gradient-to-r from-green-600 to-yellow-600 text-transparent bg-clip-text">
-            AYT Biyoloji Konu Takibi
+            AYT Matematik Konu Takibi
           </h2>
           <p className="text-md md:text-lg text-gray-700 max-w-xl mx-auto bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-inner">
             📚 İlerlemeni adım adım takip et! Düzenli çalış, hedeflerine ulaş.
@@ -92,7 +92,7 @@ export default function AytMatematikKonular() {
       {/* Konu Listesi */}
       <div className="w-full flex flex-col gap-10">
         <div className="bg-purple-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
-          <h3 className="text-2xl font-semibold text-purple-700 mb-6">Biyoloji</h3>
+          <h3 className="text-2xl font-semibold text-purple-700 mb-6">Matematik</h3>
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {topics.map((topic, index) => (
               <li

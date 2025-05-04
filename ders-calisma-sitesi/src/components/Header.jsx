@@ -137,7 +137,7 @@ const Header = () => {
                                             {isSubMenu1Open && (
                                                 <ul className="pl-4 border-l border-gray-200 ml-2 my-1">
                                                     <li><Link to="/ayt" className={menuItemStyle}>AYT Konuları</Link></li>
-                                                    <li><Link to="/aytMat" className={menuItemStyle}>AYT Matematik</Link></li>
+                                                    <li><Link to="/aytMat" className={menuItemStyle}>AYT Fizik</Link></li>
                                                     <li><Link to="/aytTur" className={menuItemStyle}>AYT Türkçe</Link></li>
                                                 </ul>
                                             )}

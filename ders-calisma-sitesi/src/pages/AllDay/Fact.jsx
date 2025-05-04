@@ -6,31 +6,35 @@ const Bilgiler = () => {
     const [favoriler, setFavoriler] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // User ID'yi token'dan ya da örnek olarak hardcoded alabiliriz
-    const userId = 4;
+    const userId = 4; // Örnek kullanıcı ID
 
     useEffect(() => {
-        const fetchSozler = async () => {
+        const fetchVeriler = async () => {
             try {
-                const response = await fetch("https://localhost:5001/api/Fact");
-                if (!response.ok) throw new Error("Veri alınamadı.");
-                const data = await response.json();
-                setSozler(data);
-                if (data.length > 0) {
-                    const rastgele = data[Math.floor(Math.random() * data.length)];
+                const responseSoz = await fetch("http://localhost:5001/api/Fact");
+                const dataSoz = await responseSoz.json();
+                setSozler(dataSoz);
+
+                if (dataSoz.length > 0) {
+                    const rastgele = dataSoz[Math.floor(Math.random() * dataSoz.length)];
                     setGuncelSoz(rastgele);
                 } else {
                     setGuncelSoz({ content: "Gösterilecek bilgi yok." });
                 }
+
+                const responseFav = await fetch(`http://localhost:5001/api/FavoriteFact/${userId}`);
+                const dataFav = await responseFav.json();
+                setFavoriler(dataFav.map(f => f.fact)); 
+
             } catch (err) {
-                console.error("Hata:", err);
+                console.error("Veri çekme hatası:", err);
                 setGuncelSoz({ content: "Bilgi alınırken hata oluştu." });
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchSozler();
+        fetchVeriler();
     }, []);
 
     const rastgeleSozSec = () => {
@@ -43,24 +47,25 @@ const Bilgiler = () => {
     };
 
     const favoriSozEkle = async () => {
-        if (!guncelSoz || favoriler.find(fav => fav.id === guncelSoz.id)) return;
+        if (!guncelSoz) return;
+
+        const zatenFavori = favoriler.some(fav => fav.id === guncelSoz.id);
+        if (zatenFavori) return;
+
+        const payload = { userId: userId, factId: guncelSoz.id };
 
         try {
-            const response = await fetch("https://localhost:5001/api/FavoriteFact", {
+            const response = await fetch("http://localhost:5001/api/FavoriteFact", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    userId,
-                    factId: guncelSoz.id
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) throw new Error("Favori eklenemedi.");
-            setFavoriler([...favoriler, guncelSoz]);
+
+            setFavoriler(prev => [...prev, guncelSoz]);
         } catch (err) {
-            console.error("Favori ekleme hatası:", err);
+            console.error("Favori ekleme hatası:", err.message);
         }
     };
 
@@ -74,9 +79,6 @@ const Bilgiler = () => {
                 <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-yellow-600">
                     Günün İlginç Bilgisi!
                 </h2>
-                <p className="mt-2 text-lg text-gray-800 max-w-lg mx-auto bg-gradient-to-r from-green-50 to-white p-6 rounded-lg shadow-md border border-green-100">
-                    🌟 Her gün yeni bir ilham kaynağı!
-                </p>
                 <div className="text-xl italic text-gray-800 mb-8 text-center">
                     {loading ? "Bilgiler yükleniyor..." : guncelSoz?.content || "Bilgi yok"}
                 </div>
@@ -94,6 +96,7 @@ const Bilgiler = () => {
                         Favorilere Ekle
                     </button>
                 </div>
+
                 <div className="w-full flex flex-col space-y-4 mt-8">
                     <h3 className="text-lg font-bold text-gray-700">Favori Bilgileriniz</h3>
                     <div className="w-full max-h-[350px] overflow-y-auto bg-gray-100 p-4 rounded-lg shadow-md">
