@@ -8,7 +8,7 @@ export default function AytMatematikKonular() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(1);  // Giriş yapan kullanıcının ID'sini burada alabilirsiniz (JWT ile)
 
-  // API'den Matematik konularını çek
+
   useEffect(() => {
     const fetchTopics = async () => {
       try {
@@ -21,7 +21,6 @@ export default function AytMatematikKonular() {
 
         setTopics(filteredTopics);
 
-        // Kullanıcının tamamladığı konuları backend'den al
         const completedResponse = await axios.get(`https://localhost:5001/api/CompletedTopic/getbyuser/${userId}`);
         const completed = completedResponse.data.map(item => item.topicId);
         setCompletedTopics(completed);

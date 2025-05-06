@@ -6,6 +6,7 @@ export default function AytMatematikKonular() {
   const [topics, setTopics] = useState([]);
   const [completedTopics, setCompletedTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userId = 1; // Bu kısmı kullanıcı kimliği ile dinamik hale getirin.
 
   // API'den Matematik konularını çek
   useEffect(() => {
@@ -20,7 +21,15 @@ export default function AytMatematikKonular() {
         );
 
         setTopics(filteredTopics);
-        setCompletedTopics(Array(filteredTopics.length).fill(false));
+
+        // Backend'den tamamlanmış konuları al
+        const completedResponse = await axios.get(
+          `https://localhost:5001/api/CompletedTopic/getbyuser/${userId}`
+        );
+        const completedTopicIds = completedResponse.data.map((topic) => topic.topicId);
+        setCompletedTopics(
+          filteredTopics.map((topic) => completedTopicIds.includes(topic.id))
+        );
       } catch (error) {
         console.error("Veri çekme hatası:", error);
       } finally {
@@ -29,7 +38,7 @@ export default function AytMatematikKonular() {
     };
 
     fetchTopics();
-  }, []);
+  }, [userId]);
 
   const progress = useMemo(() => {
     const completed = completedTopics.filter(Boolean).length;
@@ -38,10 +47,28 @@ export default function AytMatematikKonular() {
       : Math.round((completed / completedTopics.length) * 100);
   }, [completedTopics]);
 
-  const toggleTopic = (index) => {
-    setCompletedTopics((prev) =>
-      prev.map((done, i) => (i === index ? !done : done))
-    );
+  const toggleTopic = async (index) => {
+    const topic = topics[index];
+    const isCompleted = !completedTopics[index];
+
+    // Veriyi backend'e gönder
+    try {
+      if (isCompleted) {
+        await axios.post("https://localhost:5001/api/CompletedTopic/add", {
+          userId: userId,
+          topicId: topic.id,
+        });
+      } else {
+        await axios.delete(`https://localhost:5001/api/CompletedTopic/delete/${topic.id}`);
+      }
+
+      // Tamamlanmış konuları güncelle
+      setCompletedTopics((prev) =>
+        prev.map((done, i) => (i === index ? !done : done))
+      );
+    } catch (error) {
+      console.error("Tamamlanmış konu güncellenemedi:", error);
+    }
   };
 
   if (loading) {

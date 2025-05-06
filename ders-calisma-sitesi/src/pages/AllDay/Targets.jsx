@@ -1,81 +1,92 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Personal = () => {
     const [goals, setGoals] = useState([]);
     const [newGoal, setNewGoal] = useState('');
+    const [isPriority, setIsPriority] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const getUserIdFromToken = (token) => {
         if (!token) return null;
         try {
             const payload = token.split(".")[1];
             const decodedPayload = JSON.parse(atob(payload));
-            console.log("Token içeriği:", decodedPayload);
-    
-            // Doğru key ile userId'yi al
             return decodedPayload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
         } catch (error) {
             console.error("Token decode edilemedi:", error);
             return null;
         }
     };
-    
+
+    const userId = getUserIdFromToken(localStorage.getItem('token'));
+    const API_URL = 'https://localhost:5001/api/DailyGoal'; // API URL
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const userId = getUserIdFromToken(token);
-
-        const fetchGoals = async () => {
-            try {
-                const response = await fetch(`https://localhost:5001/api/DailyGoal/user/${userId}`);
-                if (!response.ok) throw new Error("Hedefler alınamadı");
-                const data = await response.json();
-                setGoals(data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        if (userId) {
-            fetchGoals();
-        }
+        fetchGoals();
     }, []);
 
-    const addGoal = async () => {
+    const fetchGoals = async () => {
         const token = localStorage.getItem("token");
-        const userId = getUserIdFromToken(token);
-    
-        if (newGoal.trim() && userId) {
+        try {
+            const response = await axios.get(`${API_URL}/user/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setGoals(response.data);
+        } catch (error) {
+            console.error('Hedefler alınamadı:', error);
+        }
+    };
+
+    const handleAddGoal = async () => {
+        const token = localStorage.getItem("token");
+
+        if (newGoal.trim()) {
             const goal = {
                 userId,
-                text: newGoal.trim(),
+                text: newGoal,
+                isPriority,
                 createdDate: new Date().toISOString()
             };
-    
-            console.log("Gönderilen veri:", goal);
-    
+
             try {
-                const res = await fetch("https://localhost:5001/api/DailyGoal/add", {
-                    method: "POST",
+                await axios.post(`${API_URL}/add`, goal, {
                     headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(goal)
+                        Authorization: `Bearer ${token}`
+                    }
                 });
-    
-                if (!res.ok) throw new Error("Hedef eklenemedi");
-    
-                await res.text(); // artık JSON beklemiyoruz
-                setGoals([...goals, goal]); // elimizdeki veriyi kullanıyoruz
+                fetchGoals();
                 setNewGoal('');
-            } catch (err) {
-                console.error(err);
+                setIsPriority(false);
+            } catch (error) {
+                console.error('Hedef eklenemedi:', error);
             }
         }
-    }; 
-    const deleteGoal = (index) => {
-        setGoals(goals.filter((_, i) => i !== index));
-        // API silme işlemi buraya eklenebilir
     };
+
+    const handleDeleteGoal = async (id) => {
+        const token = localStorage.getItem("token");
+        try {
+            await axios.delete(`${API_URL}/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            fetchGoals();
+        } catch (error) {
+            console.error('Hedef silinemedi:', error);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredGoals = goals.filter(goal =>
+        goal.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="mt-[70px] bg-white p-5 rounded-3xl shadow-md w-full max-w-[1163px] flex flex-col items-center space-y-8 mx-auto">
@@ -95,41 +106,55 @@ const Personal = () => {
                         placeholder="Yeni hedefinizi yazın..."
                         className="w-full p-4 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    
                     <button
-                        onClick={addGoal}
+                        onClick={handleAddGoal}
                         className="bg-[#00BFFF] hover:bg-[#0099CC] text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 mt-4 w-full"
                     >
                         Hedef Ekle
                     </button>
                 </div>
 
-                <div className="w-full flex flex-col space-y-4 mt-8">
-                    <h3 className="text-lg font-bold text-gray-700">Hedefleriniz</h3>
-                    <div className="w-full max-h-[350px] overflow-y-auto bg-gray-100 p-4 rounded-lg shadow-md">
-                        {goals.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {goals.map((goal, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-4 rounded-xl shadow-lg bg-white flex flex-col justify-between"
-                                    >
-                                        <span className="text-gray-800 text-sm">{goal.text}</span>
-                                        <div className="flex justify-between mt-4">
-                                            <button
-                                                onClick={() => deleteGoal(index)}
-                                                className="mt-4 ml-[-9px] bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-40 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                                            >
-                                                Sil
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="text-gray-500 text-center">Henüz bir hedef eklenmedi.</p>
-                        )}
-                    </div>
+                <div className="mt-4 w-full max-w-md">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        placeholder="Hedefleri ara..."
+                        className="w-full p-4 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    />
                 </div>
+            </div>
+
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+                {filteredGoals.length > 0 ? (
+                    filteredGoals.map((goal) => (
+                        <div
+                            key={goal.id}
+                            className="p-4 rounded-lg shadow-md flex flex-col justify-between border bg-white"
+                        >
+                            <div>
+                                <div className="flex items-center space-x-2">
+                                    {goal.isPriority && (
+                                        <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
+                                    )}
+                                    <span className="text-gray-800">{goal.text}</span>
+                                </div>
+                                <div className="text-sm text-gray-500 mt-2">Tarih: {new Date(goal.createdDate).toLocaleDateString()}</div>
+                            </div>
+                            <div className="flex justify-between items-center mt-3">
+                                <button
+                                    onClick={() => handleDeleteGoal(goal.id)}
+                                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-full shadow-lg"
+                                >
+                                    Sil
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-gray-500 text-center">Henüz bir hedef eklenmedi.</p>
+                )}
             </div>
         </div>
     );
