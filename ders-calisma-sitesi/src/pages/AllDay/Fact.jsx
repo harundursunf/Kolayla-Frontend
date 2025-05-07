@@ -1,178 +1,317 @@
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-// npm install jwt-decode
+  import React, { useState, useEffect } from "react";
+  import { jwtDecode } from "jwt-decode";
 
-const Fact = () => {
+  const Fact = () => {
     const [facts, setFacts] = useState([]);
-    const [guncelFact, setGuncelFact] = useState("");
+    const [guncelFact, setGuncelFact] = useState(null); // Initialize as null
     const [favoriler, setFavoriler] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(null);
+    const [error, setError] = useState(null); // State for handling errors
 
     // Token'dan kullanıcı ID'sini al
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                setUserId(parseInt(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]));
-
-            } catch (err) {
-                console.error("Token çözümlenemedi:", err);
-            }
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          // Assuming the user ID is stored in the 'nameidentifier' claim (standard JWT)
+          setUserId(
+            parseInt(
+              decoded[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+              ]
+            )
+          );
+        } catch (err) {
+          console.error("Token çözümlenemedi:", err);
+          // Handle invalid token, e.g., show a message or redirect
+          setError("Kullanıcı kimliği doğrulanamadı. Lütfen tekrar giriş yapın.");
+          setUserId(null); // Ensure userId is null if token is invalid
         }
+      } else {
+        // Handle no token, user is not logged in
+        console.log("Kullanıcı giriş yapmamış.");
+        setUserId(null);
+      }
     }, []);
 
     // Fact verilerini çek
     useEffect(() => {
-        const fetchFacts = async () => {
-            try {
-                const response = await fetch("https://localhost:5001/api/Fact");
-                const data = await response.json();
-                setFacts(data);
-                if (data.length > 0) {
-                    setGuncelFact(data[Math.floor(Math.random() * data.length)]);
-                } else {
-                    setGuncelFact({ text: "Yüklenecek bilgi bulunamadı." });
-                }
-                setLoading(false);
-            } catch (err) {
-                console.error("Fact verileri yüklenemedi:", err);
-                setLoading(false);
-            }
-        };
+      const fetchFacts = async () => {
+        try {
+          setLoading(true); // Start loading before fetching
+          const response = await fetch("https://localhost:5001/api/Fact");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setFacts(data);
+          if (data.length > 0) {
+            setGuncelFact(data[Math.floor(Math.random() * data.length)]);
+          } else {
+            setGuncelFact({ text: "Yüklenecek bilgi bulunamadı." });
+          }
+          setError(null); // Clear any previous errors
+        } catch (err) {
+          console.error("Fact verileri yüklenemedi:", err);
+          setError("Bilgiler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+          setGuncelFact({ text: "Bilgiler yüklenemedi." }); // Indicate error to user
+          setFacts([]); // Clear facts on error
+        } finally {
+          setLoading(false); // Stop loading after fetch
+        }
+      };
 
-        fetchFacts();
+      fetchFacts();
     }, []);
 
     // Favorileri çek
     useEffect(() => {
-        const fetchFavorites = async () => {
-            if (!userId) return;
-            try {
-                const res = await fetch(`https://localhost:5001/api/FavoriteFact/user/${userId}`);
-                const favData = await res.json();
-                setFavoriler(favData);
-            } catch (err) {
-                console.error("Favoriler yüklenemedi:", err);
+      const fetchFavorites = async () => {
+        if (userId === null) { // Only fetch if userId is explicitly set (could be null if not logged in)
+          setFavoriler([]); // Clear favorites if no user
+          return;
+        }
+        try {
+          const res = await fetch(
+            `https://localhost:5001/api/FavoriteFact/user/${userId}`
+          );
+          if (res.ok) {
+            const favData = await res.json();
+            setFavoriler(favData);
+          } else {
+            // Handle cases where the user might be logged in but has no favorites or an error occurs
+            console.warn(
+              "Favoriler yüklenirken sunucu yanıtı:",
+              res.status,
+              res.statusText
+            );
+            if (res.status === 404) { // Assuming 404 means no favorites found for the user
+                setFavoriler([]);
+            } else {
+                setError("Favorileriniz yüklenirken bir sorun oluştu.");
+                setFavoriler([]); // Clear favorites on other errors
             }
-        };
+          }
+          setError(null); // Clear previous errors
+        } catch (err) {
+          console.error("Favoriler yüklenemedi:", err);
+          setError("Favorileriniz yüklenirken bir hata oluştu.");
+          setFavoriler([]); // Clear favorites on error
+        }
+      };
 
-        fetchFavorites();
-    }, [userId]);
+      fetchFavorites();
+    }, [userId]); // Re-run when userId changes
 
     const rastgeleFactSec = () => {
+      if (facts.length > 0) {
         const random = facts[Math.floor(Math.random() * facts.length)];
         setGuncelFact(random);
+      } else {
+        setGuncelFact({ text: "Daha fazla bilgi bulunamadı." });
+      }
     };
 
     const favoriFactEkle = async () => {
-        if (!userId || !guncelFact.id) return;
+      if (userId === null) {
+        alert("Favori eklemek için giriş yapmalısınız."); // Inform user if not logged in
+        return;
+      }
+      if (!guncelFact || !guncelFact.id) {
+        console.warn("Favorilere eklenecek geçerli bir fact yok.");
+        // Optionally inform the user that there's no fact to add
+        return;
+      }
 
-        if (!favoriler.some(f => f.factId === guncelFact.id)) {
-            try {
-                const response = await fetch("https://localhost:5001/api/FavoriteFact", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userId: userId,
-                        factId: guncelFact.id
-                    })
-                });
+      // Check if the fact is already in favorites to prevent duplicates in the UI immediately
+      if (favoriler.some((f) => f.factId === guncelFact.id)) {
+        console.log("Bu fact zaten favorilerinizde.");
+        alert("Bu bilgi zaten favorilerinizde!"); // Provide user feedback
+        return;
+      }
 
-                if (response.ok) {
-                    setFavoriler([...favoriler, { userId, factId: guncelFact.id }]);
-                } else {
-                    console.error("Favori eklenemedi.");
-                }
-            } catch (err) {
-                console.error("Favori eklenirken hata:", err);
-            }
+      try {
+        const response = await fetch("https://localhost:5001/api/FavoriteFact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: userId,
+            factId: guncelFact.id,
+          }),
+        });
+
+        if (response.ok) {
+          // Add the new favorite to the state to update the UI
+          setFavoriler([...favoriler, { userId, factId: guncelFact.id }]);
+          console.log("Favori başarıyla eklendi.");
+          alert("Favorilere eklendi!"); // Provide success feedback
+        } else {
+          const errorText = await response.text();
+          console.error("Favori eklenemedi:", response.status, errorText);
+          setError("Favori eklenirken bir hata oluştu."); // Provide error feedback
         }
+      } catch (err) {
+        console.error("Favori eklenirken hata:", err);
+        setError("Favori eklenirken ağ hatası oluştu."); // Provide network error feedback
+      }
     };
 
     const favoriFactSil = async (factId) => {
-        const token = localStorage.getItem("token");
-        if (!userId || !token) {
-            console.error("Kullanıcı ID veya Token bulunamadı.");
-            return;
+      console.log("Silme işlemi başlatıldı.");
+      console.log("Kullanıcı ID:", userId);
+      console.log("Silinecek Fact ID:", factId);
+
+      const token = localStorage.getItem("token");
+      if (userId === null || !token) {
+        console.error("Kullanıcı ID veya Token bulunamadı.");
+        setError("Favori silmek için giriş yapmalısınız.");
+        return;
+      }
+
+      try {
+        // Find the FavoriteFact entry to get its ID for the DELETE request if needed by the API
+        // Assuming the API can delete by userId and factId as per the current code
+        const url = `https://localhost:5001/api/FavoriteFact/${userId}/${factId}`;
+        console.log("Silme isteği URL:", url);
+
+        const response = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        console.log("Sunucudan gelen yanıt status:", response.status);
+
+        if (response.ok) {
+          console.log(`Fact ID ${factId} başarıyla silindi.`);
+          // Remove the deleted favorite from the state to update the UI
+          setFavoriler((prevFavoriler) =>
+            prevFavoriler.filter((f) => f.factId !== factId)
+          );
+          alert("Favori başarıyla silindi."); // Provide success feedback
+          setError(null); // Clear any previous errors
+        } else {
+          const errorMessage = await response.text();
+          console.error(
+            `Favori silinemedi. Status: ${response.status} | Mesaj: ${errorMessage}`
+          );
+          setError("Favori silinirken bir hata oluştu."); // Provide error feedback
         }
-    
-        try {
-            const response = await fetch(`https://localhost:5001/api/FavoriteFact/${userId}/${factId}`, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                }
-            });
-    
-            if (response.ok) {
-                // Favoriler listesinden silinen öğeyi çıkar
-                setFavoriler((prevFavoriler) => prevFavoriler.filter(f => f.factId !== factId));
-                console.log(`Favori bilgi (ID: ${factId}) başarıyla silindi.`);
-            } else {
-                const errorMessage = await response.text();
-                console.error(`Favori silinemedi. Status: ${response.status} | Mesaj: ${errorMessage}`);
-            }
-        } catch (err) {
-            console.error("Silme işlemi sırasında bir hata oluştu:", err);
-        }
+      } catch (err) {
+        console.error("Silme işlemi sırasında bir hata oluştu:", err);
+        setError("Favori silinirken ağ hatası oluştu."); // Provide network error feedback
+      }
     };
-    
-    
+
+    // Find fact details for favorites display
+    const getFactDetails = (factId) => {
+        return facts.find(f => f.id === factId);
+    }
 
 
     return (
-        <div className="mt-[100px] bg-white p-5 rounded-3xl shadow-md w-full max-w-[1163px] flex flex-col items-center space-y-8 mx-auto">
-            <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                Fact
-            </h2>
-            <div className="text-xl italic text-gray-800 mb-6 text-center">
-                {loading ? "Bilgiler yükleniyor..." : guncelFact?.text || "Bilgi yok"}
-            </div>
-            <div className="flex justify-center space-x-4">
-                <button
-                    onClick={rastgeleFactSec}
-                    className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                >
-                    Değiştir
-                </button>
-                <button
-                    onClick={favoriFactEkle}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                >
-                    Favorilere Ekle
-                </button>
-            </div>
+      <div className="mt-[160px] bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl shadow-3xl w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-10 animate-fade-in ">
+        {/* Main Fact Display and Controls */}
+        <div className="flex-1 flex flex-col items-center space-y-8 p-6 bg-white rounded-xl shadow-lg border border-blue-200">
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700 drop-shadow-md">
+            Günün Bilgisi
+          </h2>
 
-            <div className="w-full flex flex-col space-y-4 mt-8">
-                <h3 className="text-lg font-bold text-gray-700">Favori Bilgileriniz</h3>
-                <div className="w-full max-h-[350px] overflow-y-auto bg-gray-100 p-4 rounded-lg shadow-md">
-                    {favoriler.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {favoriler.map((fav, index) => {
-                                const matchedFact = facts.find(f => f.id === fav.factId);
-                                return (
-                                    <div key={index} className="p-4 rounded-xl shadow-lg bg-white flex flex-col justify-between">
-                                        <span className="text-gray-800 text-sm">{matchedFact?.text}</span>
-                                        <button
-                                            onClick={() => favoriFactSil(fav.factId)}
-                                            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-transform transform hover:scale-105"
-                                        >
-                                            Sil
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500 text-center">Henüz bir favori bilgi eklenmedi.</p>
-                    )}
-                </div>
-            </div>
+          {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative w-full" role="alert">
+                  <strong className="font-bold">Hata:</strong>
+                  <span className="block sm:inline"> {error}</span>
+              </div>
+          )}
+
+
+          <div className="relative w-full min-h-[150px] flex items-center justify-center bg-gray-50 p-8 rounded-lg shadow-inner border-l-4 border-blue-400">
+            {loading ? (
+              <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 border-4 border-blue-400 border-dashed rounded-full animate-spin mb-4"></div>
+                  <p className="text-gray-600 italic text-lg">Bilgiler yükleniyor...</p>
+              </div>
+            ) : (
+              <p className="text-gray-800 text-xl italic text-center leading-relaxed">
+                {guncelFact?.text || "Bilgi yok"}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 w-full max-w-md">
+            <button
+              onClick={rastgeleFactSec}
+              className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 animate-bounce-once"
+              disabled={loading || facts.length === 0} // Disable if loading or no facts
+            >
+              Başka Bir Bilgi Gör
+            </button>
+            <button
+              onClick={favoriFactEkle}
+              className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={userId === null || !guncelFact || favoriler.some(f => f.factId === guncelFact?.id)} // Disable if no user, no current fact, or already favorited
+            >
+              Favorilere Ekle
+            </button>
+          </div>
         </div>
-    );
-};
 
-export default Fact;
+        {/* Favorites List */}
+        <div className="lg:w-1/3 flex flex-col space-y-4 p-6 bg-white rounded-xl shadow-lg border border-blue-200">
+          <h3 className="text-2xl font-bold text-gray-700 border-b-2 border-blue-300 pb-3">
+            Favori Bilgileriniz
+          </h3>
+          <div className="w-full max-h-96 overflow-y-auto custom-scrollbar"> {/* Added custom-scrollbar class */}
+            {userId === null ? (
+              <p className="text-gray-500 text-center italic p-4">
+                Favori bilgilerinizi görmek için lütfen giriş yapın.
+              </p>
+            ) : favoriler.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {favoriler.map((fav) => {
+                  const matchedFact = getFactDetails(fav.factId);
+                  // Only render if the fact details are available
+                  if (!matchedFact) {
+                      console.warn(`Fact details not found for favorite with factId: ${fav.factId}`);
+                      return null; // Don't render if fact details are missing
+                  }
+                  return (
+                    <div
+                      key={fav.factId} // Use a stable key
+                      className="p-4 rounded-lg shadow-sm bg-blue-50 flex flex-col justify-between border border-blue-200 hover:shadow-md transition-shadow duration-200"
+                    >
+                      <p className="text-gray-800 text-sm mb-4 leading-relaxed">
+                        {matchedFact.text}
+                      </p>
+                      <button
+                        onClick={() => favoriFactSil(fav.factId)}
+                        className="self-end bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 px-4 rounded-md shadow transition-transform transform hover:scale-105 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50"
+                      >
+                        Sil
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              !loading && ( // Only show message if not loading
+                  <p className="text-gray-500 text-center italic p-4">
+                    Henüz bir favori bilgi eklenmedi.
+                  </p>
+              )
+            )}
+              {/* Add a loading indicator for favorites if needed when userId is available but favorites are still fetching */}
+              {userId !== null && loading && favoriler.length === 0 && (
+                  <p className="text-gray-500 text-center italic p-4">Favoriler yükleniyor...</p>
+              )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  export default Fact;
