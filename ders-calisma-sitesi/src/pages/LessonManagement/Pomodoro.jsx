@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-// JWT payload çözme ve userId alma mantığı (Değişiklik yok)
 const decodeUserIdFromToken = (token) => {
   if (!token) return null;
   try {
@@ -22,7 +21,6 @@ const decodeUserIdFromToken = (token) => {
 };
 
 const Pomodoro = () => {
-  // Mevcut Sayaç State'leri (Değişiklik yok)
   const [timeRemaining, setTimeRemaining] = useState(25 * 60);
   const [isWorking, setIsWorking] = useState(true);
   const [isActive, setIsActive] = useState(false);
@@ -31,7 +29,6 @@ const Pomodoro = () => {
   const [statusMessage, setStatusMessage] = useState('Çalışma Zamanı');
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Yeni State: Geçmiş Kayıtlar (Değişiklik yok)
   const [pastRecords, setPastRecords] = useState([]);
   const [recordsLoading, setRecordsLoading] = useState(false);
   const [recordsError, setRecordsError] = useState(null);
@@ -39,7 +36,6 @@ const Pomodoro = () => {
   const intervalRef = useRef(null);
   const API_URL = 'https://localhost:5001/api/StudyRecord';
 
-  // Tarih formatlama yardımcı fonksiyonu (Değişiklik yok)
   const formatRecordDate = (isoString) => {
     if (!isoString) return 'Geçersiz Tarih';
     try {
@@ -55,7 +51,6 @@ const Pomodoro = () => {
     }
   };
 
-  // Geçmiş çalışma kayıtlarını backend'den çekme fonksiyonu (Değişiklik yok)
   const fetchStudyRecords = async (userIdToFetch) => {
     if (!userIdToFetch) {
       console.warn("Kullanıcı ID'si olmadan çalışma kayıtları çekilemez.");
@@ -90,7 +85,6 @@ const Pomodoro = () => {
     }
   };
 
-  // Component yüklendiğinde JWT'den kullanıcı ID'sini alalım ve kayıtları çekelim (Değişiklik yok)
   useEffect(() => {
     const token = localStorage.getItem('token');
     const id = decodeUserIdFromToken(token);
@@ -99,12 +93,9 @@ const Pomodoro = () => {
       fetchStudyRecords(id);
     } else {
       console.error("Kullanıcı ID alınamadı. Lütfen giriş yapın.");
-      // Kullanıcıya görsel geri bildirim zaten JSX içinde currentUser === null kontrolü ile yapılıyor.
-      // setRecordsError("Kullanıcı bilgilerine ulaşılamadı. Lütfen giriş yaptığınızdan emin olun."); // Bu satır kaldırılabilir, çünkü aşağıda daha genel bir uyarı var
     }
   }, []);
 
-  // Sayaç mantığı için useEffect hook'u (Değişiklik yok)
   useEffect(() => {
     if (isActive && timeRemaining > 0) {
       intervalRef.current = setInterval(() => {
@@ -116,21 +107,18 @@ const Pomodoro = () => {
     }
   }, [isActive, timeRemaining, isWorking, workDuration, breakDuration, currentUser]);
 
-  // Süreyi formatlama (MM:SS) (Değişiklik yok)
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Mod değiştirme (Çalışma <-> Mola) (Değişiklik yok)
   const switchMode = (isWorkMode) => {
     setIsWorking(isWorkMode);
     setStatusMessage(isWorkMode ? 'Çalışma Zamanı' : 'Mola Zamanı');
     setTimeRemaining(isWorkMode ? workDuration * 60 : breakDuration * 60);
   };
 
-  // Çalışma kaydını backend'e gönderme fonksiyonu (Değişiklik yok)
   const saveStudyRecord = async () => {
     if (currentUser === null) {
       console.error("saveStudyRecord: Kullanıcı kimliği mevcut değil, kayıt yapılamadı.");
@@ -164,7 +152,6 @@ const Pomodoro = () => {
     }
   };
 
-  // Sayaç süresi bittiğinde çalışacak fonksiyon (Değişiklik yok)
   const handleTimeUp = () => {
     clearInterval(intervalRef.current);
     if (isWorking) {
@@ -175,7 +162,6 @@ const Pomodoro = () => {
     }
   };
 
-  // Buton fonksiyonları (Değişiklik yok)
   const startTimer = () => {
     if (currentUser === null) {
       console.warn("startTimer: Kullanıcı kimliği olmadan sayaç başlatılamaz.");
@@ -199,7 +185,6 @@ const Pomodoro = () => {
     setStatusMessage('Çalışma Zamanı');
   };
 
-  // Süre ayarlama inputları için handler (Değişiklik yok)
   const handleWorkDurationChange = (e) => {
     const minutes = parseInt(e.target.value, 10);
     if (!isNaN(minutes) && minutes > 0) {
@@ -222,7 +207,6 @@ const Pomodoro = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 selection:bg-teal-500 selection:text-white mt-">
-      {/* Kullanıcı oturum açmamışsa uyarı mesajı */}
       {currentUser === null && !recordsLoading && (
         <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-700/60 backdrop-blur-sm border border-red-600 text-red-100 px-6 py-3.5 rounded-xl shadow-2xl mb-8 w-auto max-w-md sm:max-w-lg text-center z-50">
           <div className="flex items-center justify-center">
@@ -235,9 +219,7 @@ const Pomodoro = () => {
       )}
 
       <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-10 gap-8 lg:gap-12 mt-16 lg:mt-0">
-        {/* Pomodoro Zamanlayıcı Bölümü (Büyük ekranlarda 6/10 genişlik) */}
         <div className="lg:col-span-6 bg-slate-800/70 backdrop-blur-lg p-6 sm:p-10 rounded-3xl shadow-2xl border border-slate-700/50">
-          {/* Süre Ayarları */}
           <div className="mb-10 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 items-end">
             <div className="flex flex-col items-center">
               <label className="block text-slate-300 text-base font-medium mb-2.5" htmlFor="workDuration">
@@ -269,17 +251,14 @@ const Pomodoro = () => {
             </div>
           </div>
 
-          {/* Durum Mesajı */}
           <p className={`text-4xl mb-6 font-bold text-center transition-colors duration-300 ${isWorking ? 'text-teal-400' : 'text-sky-400'}`}>
             {statusMessage}
           </p>
 
-          {/* Zamanlayıcı Göstergesi */}
           <div className={`text-8xl sm:text-9xl lg:text-[10rem] font-mono font-extrabold mb-10 tabular-nums text-center transition-colors duration-300 tracking-wider ${isWorking ? 'text-teal-300' : 'text-sky-300'}`}>
             {formatTime(timeRemaining)}
           </div>
 
-          {/* Kontrol Butonları */}
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-5">
             {!isActive ? (
               <button
@@ -318,13 +297,12 @@ const Pomodoro = () => {
           </div>
         </div>
 
-        {/* Geçmiş Çalışma Kayıtları Bölümü (Büyük ekranlarda 4/10 genişlik) */}
-        <div className="lg:col-span-4 bg-slate-800/70 backdrop-blur-lg p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-700/50 flex flex-col max-h-[90vh] lg:max-h-[calc(100vh-4rem)]"> {/* Yüksekliği sınırlama */}
+        <div className="lg:col-span-4 bg-slate-800/70 backdrop-blur-lg p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-700/50 flex flex-col max-h-[90vh] lg:max-h-[calc(100vh-4rem)]">
           <h3 className="text-3xl font-bold text-slate-100 mb-6 text-center border-b-2 border-slate-600/80 pb-4">
             Geçmiş Seanslar
           </h3>
 
-          <div className="flex-grow overflow-y-auto pr-2 -mr-2 custom-scrollbar"> {/* İçerik taşarsa scroll */}
+          <div className="flex-grow overflow-y-auto pr-2 -mr-2 custom-scrollbar">
             {recordsLoading && (
               <div className="flex-grow flex flex-col items-center justify-center text-center py-10">
                 <svg className="animate-spin h-12 w-12 text-teal-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -366,7 +344,7 @@ const Pomodoro = () => {
             )}
 
             {!recordsLoading && !recordsError && pastRecords.length > 0 && (
-              <ul className="space-y-5"> {/* Liste elemanları arası boşluk */}
+              <ul className="space-y-5">
                 {pastRecords.map(record => (
                   <li key={record.id} className="bg-slate-700/70 p-5 rounded-xl shadow-lg hover:bg-slate-700/95 transition-all duration-200 ease-in-out transform hover:scale-[1.01] hover:shadow-xl">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -380,7 +358,7 @@ const Pomodoro = () => {
                         {record.breakMinutes > 0 && (
                           <p className="text-lg font-semibold text-sky-400 mt-1.5 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2.5 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="MM12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /> {/* More generic pause/break icon */}
+                              <path strokeLinecap="round" strokeLinejoin="round" d="MM12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                             </svg>
                             Mola: <span className="text-slate-100 ml-1.5 font-bold">{record.breakMinutes} dk</span>
                           </p>

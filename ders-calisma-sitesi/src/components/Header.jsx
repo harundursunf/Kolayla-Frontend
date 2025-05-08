@@ -80,22 +80,22 @@ const Header = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const baseMenuButtonStyle = "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
-    const inactiveMenuButtonStyle = "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
-    const activeMenuButtonStyle = "bg-gray-100 text-indigo-600";
+    const baseMenuButtonStyle = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500";
+    const inactiveMenuButtonStyle = "text-gray-600";
+    const activeMenuButtonStyle = "bg-indigo-100 text-indigo-700";
 
-    const menuItemStyle = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150 ease-in-out whitespace-nowrap";
-    const dropdownContainerStyle = "absolute right-0 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 py-1";
+    const menuItemStyle = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-200 whitespace-nowrap";
+    const dropdownContainerStyle = "absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-50 py-2";
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
             <div className="flex items-center justify-between px-6 lg:px-16 h-20 max-w-screen-xl mx-auto">
-                <div className="flex items-center gap-6 lg:gap-8">
+                <div className="flex items-center gap-6 lg:gap-10">
                     <Link to="/Home" className="flex-shrink-0">
-                        <img src="/logo2.jpg" alt="Site Logosu" className="h-20 w-auto" />
+                        <img src="/logo7.png" alt="Site Logosu" className="h-16 w-auto" />
                     </Link>
 
-                    <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+                    <nav className="hidden md:flex items-center gap-6 lg:gap-10">
                         {/* GÜNLÜK */}
                         <div ref={menu1Ref} className="relative">
                             <button onClick={() => {
@@ -105,7 +105,7 @@ const Header = () => {
                                 setIsSubMenu1Open(false);
                                 setIsSubMenu2Open(false);
                             }} className={`${baseMenuButtonStyle} ${isMenu1Open ? activeMenuButtonStyle : inactiveMenuButtonStyle}`}>
-                                GÜNLÜK <FaChevronDown size={14} className={`transition-transform duration-200 ${isMenu1Open ? 'rotate-180' : ''}`} />
+                                GÜNLÜK <FaChevronDown size={14} className={`transition-transform ${isMenu1Open ? 'rotate-180' : ''}`} />
                             </button>
                             {isMenu1Open && (
                                 <div className={dropdownContainerStyle}>
@@ -125,7 +125,7 @@ const Header = () => {
                                 setIsMenu1Open(false);
                                 setIsMenu3Open(false);
                             }} className={`${baseMenuButtonStyle} ${isMenu2Open ? activeMenuButtonStyle : inactiveMenuButtonStyle}`}>
-                                AYT/TYT <FaChevronDown size={14} className={`transition-transform duration-200 ${isMenu2Open ? 'rotate-180' : ''}`} />
+                                AYT/TYT <FaChevronDown size={14} className={`transition-transform ${isMenu2Open ? 'rotate-180' : ''}`} />
                             </button>
                             {isMenu2Open && (
                                 <div className={dropdownContainerStyle}>
@@ -135,7 +135,7 @@ const Header = () => {
                                                 AYT <FaChevronDown size={12} className={`transition-transform ${isSubMenu1Open ? 'rotate-180' : ''}`} />
                                             </button>
                                             {isSubMenu1Open && (
-                                                <ul className="pl-4 border-l border-gray-200 ml-2 my-1">
+                                                <ul className="pl-4 border-l border-indigo-100 ml-2 mt-1 space-y-1">
                                                     <li><Link to="/ayt" className={menuItemStyle}>AYT Konuları</Link></li>
                                                     <li><Link to="/aytMat" className={menuItemStyle}>AYT Fizik</Link></li>
                                                     <li><Link to="/aytTur" className={menuItemStyle}>AYT Türkçe</Link></li>
@@ -147,7 +147,7 @@ const Header = () => {
                                                 TYT <FaChevronDown size={12} className={`transition-transform ${isSubMenu2Open ? 'rotate-180' : ''}`} />
                                             </button>
                                             {isSubMenu2Open && (
-                                                <ul className="pl-4 border-l border-gray-200 ml-2 my-1">
+                                                <ul className="pl-4 border-l border-indigo-100 ml-2 mt-1 space-y-1">
                                                     <li><Link to="/tyt" className={menuItemStyle}>TYT Konuları</Link></li>
                                                     <li><Link to="/tytMat" className={menuItemStyle}>TYT Matematik</Link></li>
                                                     <li><Link to="/tytTurkce" className={menuItemStyle}>TYT Türkçe</Link></li>
@@ -168,7 +168,7 @@ const Header = () => {
                                 setIsSubMenu1Open(false);
                                 setIsSubMenu2Open(false);
                             }} className={`${baseMenuButtonStyle} ${isMenu3Open ? activeMenuButtonStyle : inactiveMenuButtonStyle}`}>
-                                DERS İŞLEMLERİ <FaChevronDown size={14} className={`transition-transform duration-200 ${isMenu3Open ? 'rotate-180' : ''}`} />
+                                DERS İŞLEMLERİ <FaChevronDown size={14} className={`transition-transform ${isMenu3Open ? 'rotate-180' : ''}`} />
                             </button>
                             {isMenu3Open && (
                                 <div className={dropdownContainerStyle}>
@@ -184,7 +184,7 @@ const Header = () => {
 
                 {/* Kullanıcı Dropdown */}
                 <div ref={profileMenuRef} className="relative">
-                    <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 text-sm font-medium">
+                    <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-2 text-gray-700 hover:text-indigo-700 text-sm font-medium">
                         <FaUserCircle size={24} />
                         <span>{user?.name || "Profilim"}</span>
                         <FaChevronDown size={14} className={`transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />

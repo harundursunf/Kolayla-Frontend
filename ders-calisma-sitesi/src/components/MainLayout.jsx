@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from './Header'; // Header bileşenini içe aktar
+import Header from './Header'; 
 
 
 const MainLayout = ({ children }) => {
