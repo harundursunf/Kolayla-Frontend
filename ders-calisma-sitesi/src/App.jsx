@@ -37,7 +37,7 @@ const App = () => {
                     }
                 />
                 <Route path="/pomodoro" element={<MainLayout><Pomodoro /></MainLayout>} />
-                <Route path="/personal" element={<MainLayout><Personal /></MainLayout>} />
+                <Route path="/hedef" element={<MainLayout><Personal /></MainLayout>} />
                 <Route path="/gunlukSoz" element={<MainLayout><GunlukSoz /></MainLayout>} />
                 <Route path="/bilgiler" element={<MainLayout><Bilgiler /></MainLayout>} />
                 <Route path="/tyt" element={<MainLayout><Tyt /></MainLayout>} />
@@ -46,7 +46,7 @@ const App = () => {
                 <Route path="/ayt" element={<MainLayout><AytKonular /></MainLayout>} />
                 <Route path="/AytMat" element={<MainLayout><AytMat /></MainLayout>} />
                 <Route path="/AytTur" element={<MainLayout><AytTur /></MainLayout>} />
-                <Route path="/hayallerim/notlarım" element={<MainLayout><Notlarım /></MainLayout>} />
+                <Route path="/Notlar" element={<MainLayout><Notlarım /></MainLayout>} />
                 <Route path="/hayallerim/netlerim" element={<MainLayout><Netlerim /></MainLayout>} />
                 <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
 

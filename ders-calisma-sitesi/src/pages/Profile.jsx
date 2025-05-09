@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaBookOpen, FaClock, FaStickyNote, FaBullseye, FaChartBar, FaBook, FaHeart as FaRegHeart } from 'react-icons/fa';
+import { FaBookOpen, FaClock, FaStickyNote, FaBullseye, FaBook } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { format } from 'date-fns';
@@ -17,12 +17,12 @@ const Profile = () => {
     const [totalTopics, setTotalTopics] = useState(0);
     const [totalNotes, setTotalNotes] = useState(0);
     const [totalGoals, setTotalGoals] = useState(0);
-    const [lastFavoriteFact, setLastFavoriteFact] = useState(null);
 
     const [studyDataForGraph, setStudyDataForGraph] = useState([]);
     const [topicsDataForGraph, setTopicsDataForGraph] = useState([]);
 
-    const PIE_COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899'];
+    const PIE_COLORS = ['#2563eb', '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899', '#06b6d4', '#f97316'];
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -66,12 +66,11 @@ const Profile = () => {
                 const userRes = await axios.get(`https://localhost:5001/api/Users/${userId}`, { headers });
                 setUser(userRes.data);
 
-                const [allTopicsRes, goalsRes, notesRes, recordsRes, favoriteFactsRes] = await Promise.all([
+                const [allTopicsRes, goalsRes, notesRes, recordsRes] = await Promise.all([
                     axios.get(`https://localhost:5001/api/Topic/`, { headers }).catch(err => { console.warn("Tüm konular getirilemedi:", err); return { data: [] }; }),
                     axios.get(`https://localhost:5001/api/DailyGoal/user/${userId}`, { headers }).catch(err => { console.warn("Hedefler getirilemedi:", err); return { data: [] }; }),
                     axios.get(`https://localhost:5001/api/Note/user/${userId}`, { headers }).catch(err => { console.warn("Notlar getirilemedi:", err); return { data: [] }; }),
                     axios.get(`https://localhost:5001/api/StudyRecord/user/${userId}`, { headers }).catch(err => { console.warn("Çalışma kayıtları getirilemedi:", err); return { data: [] }; }),
-                    axios.get(`https://localhost:5001/api/FavoriteFact/user/${userId}`, { headers }).catch(err => { console.warn("Favori sözler getirilemedi:", err); return { data: [] }; }),
                 ]);
 
                 setTotalGoals(goalsRes.data.length);
@@ -148,29 +147,18 @@ const Profile = () => {
                     date.setDate(today.getDate() - i);
 
                     const formattedDateKey = format(date, 'yyyy-MM-dd');
-                    const displayDate = format(date, 'MMM d');
+                    const displayDate = format(date, 'MMM d'); // e.g., 'May 8'
+
+                    const dailyMinutes = dailyStudyMap.get(formattedDateKey) || 0;
+                    const dailyHours = parseFloat((dailyMinutes / 60).toFixed(1)); // Convert minutes to hours, rounded to 1 decimal place
 
                     graphData.push({
                         date: displayDate,
-                        minutes: dailyStudyMap.get(formattedDateKey) || 0,
+                        hours: dailyHours, // Use 'hours' key for graph data
                     });
                 }
 
                 setStudyDataForGraph(graphData);
-
-
-                if (favoriteFactsRes.data && Array.isArray(favoriteFactsRes.data) && favoriteFactsRes.data.length > 0) {
-
-                    const sortedFacts = favoriteFactsRes.data.sort((a, b) => {
-                        const dateA = new Date(a.createdAt);
-                        const dateB = new Date(b.createdAt);
-                        return dateB - dateA;
-                    });
-                    setLastFavoriteFact(sortedFacts[0]);
-                } else {
-                    setLastFavoriteFact(null);
-                }
-
 
             } catch (err) {
                 console.error("API Hatası:", err.response ? err.response.data : err.message);
@@ -179,19 +167,12 @@ const Profile = () => {
                 } else if (err.response && err.response.status === 404) {
                     if (err.config && err.config.url && err.config.url.includes(`/api/Users/${userId}`)) {
                         setError("Kullanıcı bilgileri bulunamadı.");
-                    } else if (err.config && err.config.url && err.config.url.includes(`/api/FavoriteFact/user/${userId}`)) {
-
-                        console.warn("Favori sözler bulunamadı.");
-                        setLastFavoriteFact(null);
-                        if (!user) {
-                            setError(`Kullanıcı bilgileri alınamadı: ${err.message || err.toString()}`);
-                        }
                     }
                     else {
-                           console.warn("Bir alt kaynak 404 döndürdü:", err.config ? err.config.url : 'Bilinmeyen URL');
-                         if (!user) {
-                             setError(`Bilgiler alınamadı: ${err.message || err.toString()}`);
-                         }
+                       console.warn("Bir alt kaynak 404 döndürdü:", err.config ? err.config.url : 'Bilinmeyen URL');
+                       if (!user) { // Only set error if user info couldn't be fetched
+                            setError(`Bilgiler alınamadı: ${err.message || err.toString()}`);
+                       }
                     }
                 }
                 else {
@@ -249,23 +230,23 @@ const Profile = () => {
     return (
         <AnimatePresence mode="wait">
             {error ? (
-                   <motion.div
-                     key="error-state"
-                     className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-br from-red-100 to-orange-100 p-6 z-50"
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     exit={{ opacity: 0 }}
-                   >
-                     <p className="text-red-800 font-semibold text-xl mb-6">{error}</p>
-                     {error.includes("giriş yapın") && (
-                           <button
-                              onClick={() => window.location.href = '/login'}
-                              className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold shadow-md hover:bg-red-700 transition duration-300"
-                           >
-                             Giriş Yap
-                           </button>
-                     )}
-                   </motion.div>
+                    <motion.div
+                        key="error-state"
+                        className="absolute inset-0 flex flex-col justify-center items-center text-center bg-gradient-to-br from-red-100 to-orange-100 p-6 z-50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                       <p className="text-red-800 font-semibold text-xl mb-6">{error}</p>
+                       {error.includes("giriş yapın") && (
+                            <button
+                                onClick={() => window.location.href = '/login'}
+                                className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold shadow-md hover:bg-red-700 transition duration-300"
+                            >
+                                Giriş Yap
+                            </button>
+                       )}
+                    </motion.div>
             ) : (
                 <motion.div
                     key="profile-content"
@@ -283,7 +264,7 @@ const Profile = () => {
                         >
                             <div className="flex flex-col">
                                 <h3 className="text-xl font-bold text-indigo-700 border-b-2 border-indigo-300 pb-3 mb-4 flex items-center justify-center text-center">
-                                    <FaClock className="mr-3 text-indigo-600 text-lg" />Son 7 Gün Çalışma Süresi (dk)
+                                    <FaClock className="mr-3 text-indigo-600 text-lg" />Son 7 Gün Çalışma Süresi (saat)
                                 </h3>
                                 <div className="w-full h-60">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -291,23 +272,35 @@ const Profile = () => {
                                             data={studyDataForGraph}
                                             margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
                                         >
-                                            <CartesianGrid strokeDashArray="3 3" stroke="#e5e7eb" />
-                                            <XAxis dataKey="date" stroke="#4b5563" axisLine={false} tickLine={false} />
-                                            <YAxis stroke="#4b5563" axisLine={false} tickLine={false} />
+                                            {/* MODIFICATION: Added SVG defs for gradient */}
+                                            <defs>
+                                                <linearGradient id="studyGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/> {/* Indigo-500 */}
+                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.9}/> {/* Blue-500 */}
+                                                </linearGradient>
+                                            </defs>
+                                            {/* MODIFICATION: Lighter horizontal grid */}
+                                            <CartesianGrid strokeDashArray="3 3" stroke="#f3f4f6" vertical={false} />
+                                            {/* MODIFICATION: Slightly lighter axis text color */}
+                                            <XAxis dataKey="date" stroke="#6b7280" axisLine={false} tickLine={false} />
+                                            {/* MODIFICATION: Slightly lighter axis text color */}
+                                            <YAxis stroke="#6b7280" axisLine={false} tickLine={false} />
                                             <ChartTooltip
                                                 cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                                                 labelFormatter={(label) => `Tarih: ${label}`}
-                                                formatter={(value) => [`${value} dk`, 'Çalışma Süresi']}
+                                                formatter={(value) => [`${value.toFixed(1)} saat`, 'Çalışma Süresi']}
                                                 contentStyle={{
                                                     backgroundColor: '#fff',
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '0.375rem',
                                                     padding: '0.75rem',
                                                     fontSize: '0.9rem',
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)' // Added subtle shadow to tooltip
                                                 }}
                                                 labelStyle={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
                                             />
-                                            <Bar dataKey="minutes" fill="#3b82f6" barSize={20} animationBegin={0} animationDuration={800} />
+                                            {/* Using the gradient fill */}
+                                            <Bar dataKey="hours" fill="url(#studyGradient)" barSize={20} animationBegin={0} animationDuration={800} radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -315,47 +308,48 @@ const Profile = () => {
 
                             <div className="flex flex-col items-center">
                                 <h3 className="text-xl font-bold text-indigo-700 border-b-2 border-indigo-300 pb-3 mb-4 flex items-center justify-center text-center">
-                                    <FaBook className="mr-3 text-indigo-600 text-lg" />Konu Tamamlanma Durumu
+                                    <FaBook className="mr-3 text-indigo-600 text-lg" />Konu Tamamlama Durumu
                                 </h3>
-                                {totalTopics > 0 && topicsDataForGraph.length > 0 && (
-                                    <div className="w-full h-60 flex justify-center items-center">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                                                <Pie
-                                                    data={topicsDataForGraph}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    outerRadius={80}
-                                                    fill="#8884d8"
-                                                    dataKey="value"
-                                                    label={(entry) => `${entry.name}: ${entry.value}`}
-                                                    animationBegin={0} animationDuration={800}
-                                                >
-                                                    {topicsDataForGraph.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                                                    ))}
-                                                </Pie>
-                                                <ChartTooltip
-                                                    formatter={(value, name) => [`${value}`, name]}
-                                                    contentStyle={{
-                                                         backgroundColor: '#fff',
-                                                         border: '1px solid #d1d5db',
-                                                         borderRadius: '0.375rem',
-                                                         padding: '0.75rem',
-                                                         fontSize: '0.9rem',
-                                                     }}
-                                                     labelStyle={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
-                                                />
-                                                <Legend layout="horizontal" align="center" verticalAlign="bottom" />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                )}
-                                {totalTopics === 0 && !loading && !error && (
-                                    <p className="text-gray-600 text-center">Henüz hiç konu eklenmemiş.</p>
-                                )}
-                                {topicsDataForGraph.length === 0 && totalTopics > 0 && !loading && !error && (
-                                       <p className="text-gray-600 text-center">Konu tamamlama verileri yüklenemedi.</p>
+                                {totalTopics > 0 && topicsDataForGraph.length > 0 ? (
+                                        <div className="w-full h-60 flex justify-center items-center">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                                                    <Pie
+                                                        data={topicsDataForGraph}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        outerRadius={80}
+                                                        innerRadius={60}
+                                                        paddingAngle={3}
+                                                        fill="#8884d8"
+                                                        dataKey="value"
+                                                        label={(entry) => `${entry.name}: ${entry.value}`}
+                                                        animationBegin={0} animationDuration={800}
+                                                    >
+                                                        {topicsDataForGraph.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                                        ))}
+                                                    </Pie>
+                                                    <ChartTooltip
+                                                        formatter={(value, name) => [`${value}`, name]}
+                                                        contentStyle={{
+                                                             backgroundColor: '#fff',
+                                                             border: '1px solid #d1d5db',
+                                                             borderRadius: '0.375rem',
+                                                             padding: '0.75rem',
+                                                             fontSize: '0.9rem',
+                                                             boxShadow: '0 2px 8px rgba(0,0,0,0.1)' // Added subtle shadow to tooltip
+                                                         }}
+                                                        labelStyle={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+                                                    />
+                                                    <Legend layout="horizontal" align="center" verticalAlign="bottom" />
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                ) : totalTopics > 0 && !loading && !error ? (
+                                     <p className="text-gray-600 text-center">Konu tamamlama verileri yüklenemedi.</p>
+                                ) : !loading && !error && (
+                                     <p className="text-gray-600 text-center">Henüz hiç konu eklenmemiş.</p>
                                 )}
                             </div>
 

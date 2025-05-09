@@ -57,10 +57,10 @@ const Goal = () => {
       try {
         const decoded = jwtDecode(token);
         const id = parseInt(
-            decoded[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            ]
-          );
+          decoded[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+          ]
+        );
         setUserId(id);
         setError(null);
 
@@ -132,7 +132,7 @@ const Goal = () => {
       setError("Hedef silmek için giriş yapmalısınız.");
       return;
     }
-      setError(null);
+    setError(null);
 
     try {
       const token = localStorage.getItem("token");
@@ -160,16 +160,16 @@ const Goal = () => {
     }
   };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "Tarih Yok";
-        try {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('tr-TR', options);
-        } catch (e) {
-            console.error("Tarih formatlama hatası:", e);
-            return "Geçersiz Tarih";
-        }
-    };
+  const formatDate = (dateString) => {
+    if (!dateString) return "Tarih Yok";
+    try {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('tr-TR', options);
+    } catch (e) {
+      console.error("Tarih formatlama hatası:", e);
+      return "Geçersiz Tarih";
+    }
+  };
 
 
   return (
@@ -190,29 +190,29 @@ const Goal = () => {
         )}
 
         <div className="relative w-full flex flex-col items-center space-y-6 bg-gray-50 p-8 rounded-lg shadow-inner border-l-4 border-green-400">
-           <p className="text-gray-800 text-xl italic text-center leading-relaxed">
+          <p className="text-gray-800 text-xl italic text-center leading-relaxed">
             🎯 Yeni hedeflerinizi buraya ekleyin!
-           </p>
-           {userId === null ? (
-                <p className="text-gray-500 italic text-center">Hedef eklemek için lütfen giriş yapın.</p>
-           ) : (
-             <>
-               <input
-                 type="text"
-                 value={newGoal}
-                 onChange={(e) => setNewGoal(e.target.value)}
-                 placeholder="Yeni hedefinizi yazın..."
-                 className="w-full p-4 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 ease-in-out"
-               />
-               <button
-                 onClick={handleAddGoal}
-                 className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                 disabled={!newGoal.trim() || userId === null}
-               >
-                 Hedef Ekle
-               </button>
-             </>
-           )}
+          </p>
+          {userId === null ? (
+            <p className="text-gray-500 italic text-center">Hedef eklemek için lütfen giriş yapın.</p>
+          ) : (
+            <>
+              <input
+                type="text"
+                value={newGoal}
+                onChange={(e) => setNewGoal(e.target.value)}
+                placeholder="Yeni hedefinizi yazın..."
+                className="w-full p-4 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 ease-in-out"
+              />
+              <button
+                onClick={handleAddGoal}
+                className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!newGoal.trim() || userId === null}
+              >
+                Hedef Ekle
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -226,10 +226,10 @@ const Goal = () => {
               Hedeflerinizi görmek için lütfen giriş yapın.
             </p>
           ) : loading ? (
-             <div className="flex flex-col items-center">
-               <div className="w-12 h-12 border-4 border-green-400 border-dashed rounded-full animate-spin mb-4"></div>
-               <p className="text-gray-600 italic text-lg">Hedefler yükleniyor...</p>
-             </div>
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 border-4 border-green-400 border-dashed rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-600 italic text-lg">Hedefler yükleniyor...</p>
+            </div>
           ) : goals.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
               {goals.map((goal) => (
@@ -238,12 +238,12 @@ const Goal = () => {
                   className="p-4 rounded-lg shadow-sm bg-green-50 flex flex-col justify-between border border-green-200 hover:shadow-md transition-shadow duration-200"
                 >
                   <div>
-                     {goal.isPriority && (
-                         <span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-2 animate-pulse"></span>
-                     )}
+                    {goal.isPriority && (
+                      <span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-2 animate-pulse"></span>
+                    )}
                     <p className="text-gray-800 text-sm mb-2 leading-relaxed inline">{goal.text}</p>
                     <div className="text-xs text-gray-600 mt-1">
-                        Tarih: {formatDate(goal.createdDate)}
+                      Tarih: {formatDate(goal.createdDate)}
                     </div>
                   </div>
                   <button

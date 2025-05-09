@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import dersResmi from "../../images/ders4.png";
+import dersResmi from "../../images/ders9.png";
 
 export default function AytMatematikKonular() {
   const [topics, setTopics] = useState([]);
@@ -249,7 +249,7 @@ const toggleFavorite = async (topicId) => {
                       : "text-gray-400 hover:text-gray-500"
                       }`}
                 >
-                  ❤️ 
+                  
                 </button>
               </li>
             ))}

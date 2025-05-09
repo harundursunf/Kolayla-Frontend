@@ -111,7 +111,7 @@ const Header = () => {
                                 <div className={dropdownContainerStyle}>
                                     <ul>
                                         <li><Link to="/GunlukSoz" className={menuItemStyle}>Günlük Sözler</Link></li>
-                                        <li><Link to="/personal" className={menuItemStyle}>Günlük Hedefler</Link></li>
+                                        <li><Link to="/hedef" className={menuItemStyle}>Günlük Hedefler</Link></li>
                                         <li><Link to="/Bilgiler" className={menuItemStyle}>Günlük Bilgiler</Link></li>
                                     </ul>
                                 </div>
@@ -174,7 +174,7 @@ const Header = () => {
                                 <div className={dropdownContainerStyle}>
                                     <ul>
                                         <li><Link to="/pomodoro" className={menuItemStyle}>Pomodoro</Link></li>
-                                        <li><Link to="/hayallerim/notlarım" className={menuItemStyle}>Notlarım</Link></li>
+                                        <li><Link to="/Notlar" className={menuItemStyle}>Notlarım</Link></li>
                                     </ul>
                                 </div>
                             )}
