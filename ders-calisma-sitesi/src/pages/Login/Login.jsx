@@ -153,7 +153,7 @@ export default function Login() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          Başarıya Giden Yolda İlk Adımını At.
+          Zorlaştıran Çoktu, Kolaylaştıran Belli.
         </motion.p>
 
         {/* Hareketli Ok */}

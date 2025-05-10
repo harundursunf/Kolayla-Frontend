@@ -26,8 +26,6 @@ export default function Register() {
     try {
       await register(form);
       console.log("Registration successful");
-      // Başarılı kayıttan sonra kullanıcıya bilgi göstermek için
-      // bir state veya modal kullanabilirsiniz. Şimdilik direkt login'e yönlendiriyorum.
       navigate("/login");
     } catch (err) {
       console.error("Registration Error:", err.response?.data || err.message);
@@ -155,9 +153,9 @@ export default function Register() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-teal-700">Kolayla</span>
          </h2>
          <p className="text-xl md:text-2xl font-semibold text-gray-700 leading-relaxed drop-shadow-md"> {/* Motivasyon Yazısı */}
-            Kolayla'ya Katıl,
+             Kolayla’ya Katıl,
             <br />
-            Öğrenmek Artık Çok Kolay!
+           Zamanı Avantaja Çevir!
          </p>
          <motion.p
             className="mt-6 text-teal-800 text-lg italic" // Ek alt mesaj

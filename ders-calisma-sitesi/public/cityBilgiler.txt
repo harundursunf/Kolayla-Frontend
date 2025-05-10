@@ -1,3 +1,0 @@
-Istanbul:Boğaziçi Üniversitesi,boğaziçi.jpg,Boğaziçi Üniversitesi hakkında bilgi 1
-Ankara:Hacettepe Üniversitesi,hacettepe.jpg,Hacettepe Üniversitesi hakkında bilgi 2
-Izmir:Ege Üniversitesi,ege.jpg,Ege Üniversitesi hakkında bilgi 3

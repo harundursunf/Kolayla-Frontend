@@ -260,7 +260,7 @@ export default function AytMatematikKonular() { // Component ismi hala Matematik
                     : "text-gray-400 hover:text-gray-500"
                     }`}
                 >
-                  ❤️ {/* Daha belirgin kalp ikonu veya başka bir ikon kütüphanesi kullanılabilir */}
+                  
                 </button>
               </li>
             ))}

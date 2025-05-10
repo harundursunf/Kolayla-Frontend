@@ -83,7 +83,6 @@ const Header = () => {
     const baseMenuButtonStyle = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500";
     const inactiveMenuButtonStyle = "text-gray-600";
     const activeMenuButtonStyle = "bg-indigo-100 text-indigo-700";
-
     const menuItemStyle = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-all duration-200 whitespace-nowrap";
     const dropdownContainerStyle = "absolute right-0 mt-2 w-56 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-50 py-2";
 
