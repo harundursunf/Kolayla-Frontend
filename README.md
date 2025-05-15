@@ -87,3 +87,15 @@ Her dersin bir adımı vardır, StudyFlow ile her adımı planla! 📘
 Geliştirici: [@harundursunf](https://github.com/harundursunf)
 
 ---
+![kayıt](https://github.com/user-attachments/assets/d8645d0d-2bbf-4a32-bdf4-6e89b8965ac0)
+![giriş](https://github.com/user-attachments/assets/bce7a75e-64f4-401c-a290-ed4acdcc696e)
+![anasayfa](https://github.com/user-attachments/assets/bd61f4d1-f6a2-4a62-b05e-e75e0e3a1e2f)
+![alıntı](https://github.com/user-attachments/assets/e43aac52-f015-4740-8dd3-d457a39839f4)
+![hedef](https://github.com/user-attachments/assets/9a5b8b0f-5a4c-4bfe-9cd2-b26aa7274601)
+![bilgi](https://github.com/user-attachments/assets/b5b8a57d-d204-4819-bc5b-f327c9a28e41)
+![ayt](https://github.com/user-attachments/assets/bbde358a-3104-4eac-a361-817ca9497b18)
+![pomodoro](https://github.com/user-attachments/assets/1ab9dcdd-45ef-4608-b9b5-a1c851ac0515)
+![profil](https://github.com/user-attachments/assets/88ba8c9f-b591-49a3-98f3-ca1e08fc16f9)
+
+
+
